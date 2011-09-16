@@ -21,26 +21,39 @@ var binaryGet = function(url, callback){
 //
 // This is where the fun happens
 //
+var page;
+var ir;
 binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
+  CanvasGraphics = SvgGraphics;
+
   //
   // Instantiate PDFDoc with PDF data
   //
   var pdf = new WorkerPDFDoc(data);
-  var page = pdf.getPage(1);
+      page = pdf.getPage(1);
   var scale = 1.5;
 
   //
   // Prepare canvas using PDF page dimensions
   //
+  
   var container = document.getElementById("container");
-  var canvas = new SvgCanvas(container);
-  var context = canvas.getContext("2d");
-  canvas.height = page.height * scale;
-  canvas.width = page.width * scale;  
+  
 
   //
   // Render PDF page into canvas context
   //
-  page.startRendering(context);
+  page.startRendering(container, function() {
+    ir = page.page.IRQueue;
+    var argsArray = ir.argsArray;
+    var fnArray = ir.fnArray;
+    
+    var objs = {};
+    for (var i = 0; i < fnArray.length; i++) {
+      objs[fnArray[i]] = true;
+      console.log(fnArray[i], argsArray[i].join(", "));
+    }
+    console.log(Object.keys(objs));
+  });
   canvas.append();
 });
