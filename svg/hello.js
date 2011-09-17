@@ -55,5 +55,5 @@ binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
     }
     console.log(Object.keys(objs));
   });
-  canvas.append();
+  //canvas.append();
 });

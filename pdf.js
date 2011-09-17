@@ -3353,13 +3353,13 @@ var Page = (function() {
         // Firefox error reporting from XHR callbacks.
         setTimeout(function() {
           var exc = null;
-          try {
+          // try {
             self.display(gfx, continuation);
-          } catch (e) {
-            exc = e.toString();
-            continuation(exc);
-            throw e;
-          }
+          //} catch (e) {
+           // exc = e.toString();
+            //continuation(exc);
+           // throw e;
+          //}
         });
       };
       
@@ -3432,6 +3432,7 @@ var Page = (function() {
           self.stats.render = Date.now();
           console.log("page=%d - executeIRQueue: time=%dms", 
             self.pageNumber + 1, self.stats.render - startTime);
+          gfx.endDrawing();
           callback();
         }
       }

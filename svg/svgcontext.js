@@ -8,6 +8,17 @@ var SvgGraphicsState = (function() {
   function SvgGraphicsState() {  }
 
   SvgGraphicsState.prototype = {
+    x: 0,
+    y: 0,
+    
+    lineX: 0,
+    lineY: 0,
+
+    // Character and word spacing
+    charSpacing: 0,
+    wordSpacing: 0,
+    textHScale: 1,
+
     font: null,
     fontSize: 0,
     
@@ -60,8 +71,8 @@ var SvgGraphicsState = (function() {
 function SvgGraphics(holder) {
   var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('version', '1.2');
-  svg.setAttribute('width', '100px');
-  svg.setAttribute('height', '50px');
+  svg.setAttribute('width', '1000px');
+  svg.setAttribute('height', '2000px');
 
   this.append = function() {
     holder.appendChild(svg);
@@ -76,6 +87,11 @@ function SvgGraphics(holder) {
   
   this.state = new SvgGraphicsState();
   this.state.transMatrix = [1, 0, 0, 0, 1, 0];
+
+  var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('transform', 'scale(' + 2 + ',' + 2 + ')');
+  svg.appendChild(g)
+  this.state.node = g;
 }
 
 var kExecutionTime = 50;
@@ -131,9 +147,12 @@ SvgGraphics.prototype = {
       // was short enough, do another execution round.
     } while (true);
   },
-  beginDrawing: function() { 
+  beginDrawing: function(mediaBox) {
+    this.height = mediaBox.height;
+    console.log(mediaBox);
   },
   endDrawing: function() {
+    this.append();
   },
   setFont: function(fontRef, size) {
     var state = this.state;
@@ -165,10 +184,83 @@ SvgGraphics.prototype = {
     state.node = g;
   },
   beginText: function() {
+    var state = this.state;
+    state.x = 0;
+    state.y = 0;
   },
-  moveText: function() {
+  moveText: function(x, y) {
+    var state = this.state;
+    state.x = state.lineX += x;
+    state.y = state.lineY += y;
   },
-  showSpacedText: function() {
+  showSpacedText: function(arr) {
+    // If the current font isn't supported, we can't display the text and
+    // bail out.
+    var state = this.state;
+    var font = state.font;
+    if (!font.supported) {
+      return;
+    }
+
+
+    var fontSize = state.fontSize;
+
+    var composite   = font.composite;
+    var encoding    = font.encoding;
+    var charSpacing = state.charSpacing;
+    var wordSpacing = state.wordSpacing;
+    var textHScale  = state.textHScale;
+
+    var p = state.transPoint(state.x, state.y);
+   
+    var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    svgText.setAttribute('x', p[0] + 'px');
+    svgText.setAttribute('y', this.height-p[1] + 'px');
+    svgText.setAttribute('fill', 'black');
+
+    var xStart = 0;//state.x;
+
+    for (var i = 0; i < arr.length; ++i) {
+      var e = arr[i];
+      if (IsNum(e)) {
+        state.x -= moveX = e * 0.001 * fontSize * textHScale;
+      } else if (IsString(e)) {
+        var originalText = e;
+        var text = font.charsToUnicode(e);
+        
+        // ctx.scale(1 / textHScale, 1);
+
+        var width = 0;
+        for (var n = 0; n < text.length; n++) {
+          if (composite) {
+            var position = n * 2 + 1;
+            var charcode = (originalText.charCodeAt(position - 1) << 8) +
+                            originalText.charCodeAt(position);
+          } else {
+            var charcode = originalText.charCodeAt(n);
+          }
+
+          var charWidth = font.encoding[charcode].width * fontSize * 0.001;
+          charWidth += charSpacing;
+          if (charcode == 32)
+            charWidth += wordSpacing;
+
+          //ctx.fillText(text.charAt(i), 0, 0);
+          //ctx.translate(charWidth, 0);
+          width += charWidth;
+        }
+
+        var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        tspan.setAttribute('x', (state.x - xStart) +   'px');
+        tspan.textContent = text;
+        svgText.appendChild(tspan);
+
+        state.x += width;
+      } else {
+        malformed('TJ array element ' + e + " isn't string or num");
+      }
+    }
+    state.append(svgText);
   },
   endText: function() {
   }
