@@ -27,7 +27,7 @@ var ir;
 var useCanvas = document.location.hash;
 binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
   var pdf = new WorkerPDFDoc(data);
-  var page = pdf.getPage(1);
+  var page = pdf.getPage(2);
   var scale = 1.5;
 
   var canvas = document.getElementById("the-canvas");
@@ -45,6 +45,20 @@ binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
     page.startRendering(context, function() {
       setTimeout(function() {
         console.log("Rendering canvas", Date.now() - startTime);        
+        ir = page.page.IRQueue;
+        var argsArray = ir.argsArray;
+        var fnArray = ir.fnArray;
+
+	return;
+
+        var objs = {};
+        for (var i = 0; i < fnArray.length; i++) {
+          objs[fnArray[i]] = true;
+          console.log(fnArray[i], argsArray[i].join(", "));
+        }
+        console.log(Object.keys(objs));
+
+
       }, 10);
     });
   } else {    
@@ -63,16 +77,6 @@ binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
       }, 10);
 
       
-      ir = page.page.IRQueue;
-      var argsArray = ir.argsArray;
-      var fnArray = ir.fnArray;
-
-      // var objs = {};
-      // for (var i = 0; i < fnArray.length; i++) {
-      //   objs[fnArray[i]] = true;
-      //   console.log(fnArray[i], argsArray[i].join(", "));
-      // }
-      // console.log(Object.keys(objs));
     });
   }
 });

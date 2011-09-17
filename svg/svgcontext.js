@@ -23,9 +23,12 @@ var SvgGraphicsState = (function() {
     fontSize: 0,
     
     fill: null,
+    fillColorSpace: null,
     stroke: null,
+    strokeColorSpace: null,
     
     transMatrix: null,
+    textMatrix: null,
 
     node: null,
 
@@ -48,16 +51,25 @@ var SvgGraphicsState = (function() {
         t[1] * e + t[3] * f + t[5]
       ];
     },
+
+    /**
+     * This is like calling transform(1, 0, x, 0, 1, y);
+     */
+    transformMove: function svgGraphicsState_transformMoe(x, y) {
+      var m = this.transMatrix;
+      m[2] += m[0] * x + m[1] * y;
+      m[5] += m[4] * x + m[5] * y;
+    },
     
     transPoint: function svgGraphicsState_transPoint(x, y) {
       // a0   b0  c0    x
       // d0   e0  f0    y
-      // 0    0   1     0
+      // 0    0   1     1
 
       var m = this.transMatrix;
       return [
-        m[0] * x + m[1] * y,
-        m[3] * x + m[4] * y
+        m[0] * x + m[1] * y + m[2],
+        m[3] * x + m[4] * y + m[5]
       ];
     },
 
@@ -84,10 +96,22 @@ function SvgGraphics(holder) {
     height: 50,
     svg: svg
   };
-  
-  this.state = new SvgGraphicsState();
-  this.state.transMatrix = [1, 0, 0, 0, 1, 0];
 
+  this.$path = '';
+  this.$clipCounter = 0;
+  
+  var state = this.state = new SvgGraphicsState();
+  state.transMatrix = [1, 0, 0, 0, 1, 0];
+  state.fill = state.stroke = 'black';
+
+  this.stateStack = [ state ];
+
+  // The <def> section is used to take up things like clipPath etc.
+  var def = this.def = document.createElementNS('http://www.w3.org/2000/svg',
+                                                'def');
+  svg.appendChild(def);
+
+  // Add one main <g> element for the scaling.
   var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   g.setAttribute('transform', 'scale(' + 1.5 + ',' + 1.5 + ')');
   svg.appendChild(g)
@@ -96,6 +120,7 @@ function SvgGraphics(holder) {
 
 var kExecutionTime = 50;
 var kExecutionTimeCheck = 500;
+var IDENTITY_MATRIX = [1, 0, 0, 0, 1, 0];
 
 SvgGraphics.prototype = {
 
@@ -154,6 +179,171 @@ SvgGraphics.prototype = {
   endDrawing: function() {
     this.append();
   },
+ 
+  // Paths.
+  setCurrentPoint: function(x, y) {
+    var state = this.state;
+    state.x = x;
+    state.y = y;
+  },
+
+  moveTo: function(x, y) {
+    this.$path += 'M ' + x + ' ' + y + ' ';
+    this.setCurrentPoint(x, y);
+  },
+
+  lineTo: function(x, y) {
+    this.$path += 'L ' + x + ' ' + y + ' ';
+    this.setCurrentPoint(x, y);
+  },
+ 
+  bezierCurveTo: function(x1, y1, x2, y2, x3, y3) {
+    this.$path += 'C ' + x1 + ' ' + y1 + ' ' +
+      x2 + ' ' + y2 + ' ' + x3 + ' ' + y3 + ' ';
+    this.setCurrentPoint(x3, y3);
+  },
+
+  curveTo: function(x1, y1, x2, y2, x3, y3) {
+    this.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+  },
+  curveTo2: function(x2, y2, x3, y3) {
+    var state = this.state;
+    this.ctx.bezierCurveTo(state.x, state.y, x2, y2, x3, y3);
+  },
+  curveTo3: function(x1, y1, x3, y3) {
+    this.curveTo(x1, y1, x3, y3, x3, y3);
+  },
+
+  closePath: function() {
+    this.$path += 'Z ';
+  },
+
+  rectangle: function(x, y, width, height) {
+    // TODO: There is also a <svg:rect> - maybe use that one?
+
+    // Mapping the 're'/rectangle command to other path commands as
+    // described on page 227 pdf spec.<D-r>
+    this.moveTo(x, y);
+    this.lineTo(x + width, y);
+    this.lineTo(x + width, y + height);
+    this.closePath();
+  },
+
+  buildPath: function() {
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', this.$path);
+
+    return path;
+  },
+
+  stroke: function() {
+    var state = this.state;
+
+    var path = this.buildPath();
+    path.setAttribute('stroke', state.stroke);
+    path.setAttribute('fill',   'none');
+    state.append(path);
+  },
+
+  fill: function() {
+    var state = this.state;
+
+    var path = this.buildPath();
+    path.setAttribute('stroke', 'none');
+    path.setAttribute('fill',   state.fill);
+    state.append(path);
+  },
+
+  clip: function() {
+    var clip = document.createElementNS('http://www.w3.org/2000/svg', 
+                                        'clipPath');
+    var id = 'c' + this.$clipCounter++;
+    clip.setAttribute('id', id);
+
+    // Add the current path that is used for clipping.
+    clip.appendChild(this.buildPath());
+
+    // The clipPath object is added to the <def> section of the svg.
+    this.def.appendChild(clip);
+
+    // Create a new group node that uses the created clipPath to clip
+    // its content.
+    this.appendGNode("clip-path", "url(#" + id + ")");
+  },
+  
+  transform: function(a, b, c, d, e, f) {
+    // TODO: We can try to be smart and compute some of the trans matrixes
+    // using JS to avoid lots of extra <g> notes for translation. For now
+    // just go the easy way.
+    var state = this.state;
+    this.appendGNode('transform', 'matrix(' + a + ',' + b + ',' + c + ',' +
+                                              d + ',' + e + ',' + f + ')');
+  },
+  
+  transformM: function(m) {
+    this.transform.apply(this, m);
+  },
+
+  save: function() {
+    var state = this.state;
+    this.stateStack.push(state);
+    this.state = state.clone();
+  },
+
+  restore: function() {
+    this.state = this.stateStack.pop();
+  },
+
+  paintFormXObjectBegin: function(matrix, bbox) {
+    this.save();
+
+    if (matrix && IsArray(matrix) && 6 == matrix.length)
+      this.transform.apply(this, matrix);
+
+    if (bbox && IsArray(bbox) && 4 == bbox.length) {
+      this.rectangle.apply(this, bbox);
+      this.clip();
+      this.endPath();
+    }
+  },
+
+  endPath: function() {
+    // TODO: The CanvasGraphics implementation does some more stuff
+    // here. Is that required for the SVG implementation as well?
+    this.$path = '';
+  },
+
+  paintFormXObjectEnd: function() {
+    this.restore();
+  },
+
+  setDash: function() {
+    // TODO: Implement me!
+  },
+
+  setLineCap: function() {
+    // TODO: Implement me!
+  },
+
+  setLineJoin: function() {
+    // TODO: Implement me!
+  },
+
+  appendGNode: function(key, value) {
+    var state = this.state;
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute(key, value);
+    state.append(g);
+    state.node = g;
+    // A 'setFont' should get added directly on the new g node. Therefore,
+    // reset the fontInsertNode.
+    state.fontInsertNode = null;
+  },
+
+  setLineWidth: function(width) {
+    this.appendGNode('stroke-width', width);
+  },
+  
   setFont: function(fontRef, size) {
     var state = this.state;
 
@@ -177,16 +367,28 @@ SvgGraphics.prototype = {
     state.fontUsed = false;
 
   },
+  
   beginText: function() {
     var state = this.state;
-    state.x = 0;
-    state.y = 0;
+    state.x = state.lineX = 0;
+    state.y = state.lineY = 0;
+    state.textMatrix = IDENTITY_MATRIX;
   },
+
   moveText: function(x, y) {
     var state = this.state;
     state.x = state.lineX += x;
     state.y = state.lineY += y;
   },
+
+  setTextMatrix: function(a, b, c, d, e, f) {
+    this.state.textMatrix = [a, b, c, d, e, f];
+  },
+
+  showText: function(text) {
+    this.showSpacedText([text]);
+  },
+
   showSpacedText: function(arr) {
     // If the current font isn't supported, we can't display the text and
     // bail out.
@@ -280,10 +482,71 @@ SvgGraphics.prototype = {
         malformed('TJ array element ' + e + " isn't string or num");
       }
     }
-    state.append(svgText);
+    if (font.textMatrix || state.textMatrix !== IDENTITY_MATRIX) {
+      this.save();
+      if (state.textMatrix !== IDENTITY_MATRIX) {
+        this.transformM(state.textMatrix);
+      }
+      if (font.textMatrix) {
+        this.transformM(font.textMatrix);
+      }
+      state.append(svgText);
+      this.restore();
+    } else {
+      state.append(svgText);
+    }
   },
   endText: function() {
+  },
+    
+  // Color
+  setStrokeColorSpace: function(raw) {
+    this.state.strokeColorSpace =
+          ColorSpace.fromIR(raw);
+  },
+  setFillColorSpace: function(raw) {
+    this.state.fillColorSpace =
+          ColorSpace.fromIR(raw);
+  },
+  setStrokeColor: function(/*...*/) {
+    var cs = this.state.strokeColorSpace;
+    var color = cs.getRgb(arguments);
+    this.setStrokeRGBColor.apply(this, color);
+  },
+  setFillColor: function(/*...*/) {
+    var cs = this.state.fillColorSpace;
+    var color = cs.getRgb(arguments);
+    this.setFillRGBColor.apply(this, color);
+  },
+  setStrokeRGBColor: function(r, g, b) {
+    var color = Util.makeCssRgb(r, g, b);
+    this.state.stroke = color;
+  },
+  setFillRGBColor: function(r, g, b) {
+    var color = Util.makeCssRgb(r, g, b);
+    this.state.fill = color;
+  },
+  setStrokeCMYKColor: function(c, m, y, k) {
+    var color = Util.makeCssCmyk(c, m, y, k);
+    this.state.stroke = color;
+  },
+  setFillCMYKColor: function(c, m, y, k) {
+    var color = Util.makeCssCmyk(c, m, y, k);
+    this.state.fill = color;
+  },
+
+  setRenderingIntent: function(intent) {
+    // TODO: Implement me!
+  },
+
+  setFlatness: function(flatness) {
+
+  },
+
+  paintImageXObject: function() {
+
   }
+
 }
 
 function SvgCanvas(holder) {

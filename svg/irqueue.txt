@@ -1,0 +1,910 @@
+// This is what the IRQueue for the second page of the TraceMonkey paper looks
+// like. The first word is the command, the following entries in the same line
+// the arguments passed to the command.
+
+beginText 
+setTextMatrix 12, 0, 0, -12, 18.67969, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText race
+endText 
+restore 
+setFlatness 0.6
+setFillColorSpace DeviceRgbCS
+setFillColor 1, 1, 1
+moveTo 345.2, 243.5
+lineTo 427.8, 243.5
+curveTo 437.5704, 243.5, 445.5, 235.436, 445.5, 225.5
+curveTo 445.5, 215.564, 437.5704, 207.5, 427.8, 207.5
+lineTo 345.2, 207.5
+curveTo 335.4296, 207.5, 327.5, 215.564, 327.5, 225.5
+curveTo 327.5, 235.436, 335.4296, 243.5, 345.2, 243.5
+fill 
+setDash 4,4, 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 391.7, 182
+lineTo 474.3, 182
+curveTo 484.0704, 182, 492, 190.064, 492, 200
+curveTo 492, 209.936, 484.0704, 218, 474.3, 218
+lineTo 391.7, 218
+curveTo 381.9296, 218, 374, 209.936, 374, 200
+curveTo 374, 190.064, 381.9296, 182, 391.7, 182
+stroke 
+restore 
+setFillColorSpace DeviceGrayCS
+setFillColor 0
+setFlatness 0
+save 
+transform 1, 0, 0, -1, 386, 226
+beginText 
+setTextMatrix 12, 0, 0, -12, -15.33691, -3
+dependency p1_font_5
+setFont [object Object], 1
+showText Enter
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 386, 226
+beginText 
+setTextMatrix 12, 0, 0, -12, 15.33691, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText  
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 386, 226
+beginText 
+setTextMatrix 12, 0, 0, -12, -42.02344, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText Compiled 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 386, 226
+beginText 
+setTextMatrix 12, 0, 0, -12, 11.78906, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText T
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 386, 226
+beginText 
+setTextMatrix 12, 0, 0, -12, 18.67969, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText race
+endText 
+restore 
+setFlatness 0.6
+setFillColorSpace DeviceRgbCS
+setFillColor 1, 1, 1
+moveTo 35.05, 151.5
+lineTo 102.95, 151.5
+curveTo 110.9816, 151.5, 117.5, 143.436, 117.5, 133.5
+curveTo 117.5, 123.564, 110.9816, 115.5, 102.95, 115.5
+lineTo 35.05, 115.5
+curveTo 27.0184, 115.5, 20.5, 123.564, 20.5, 133.5
+curveTo 20.5, 143.436, 27.0184, 151.5, 35.05, 151.5
+fill 
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 81.55, 274
+lineTo 149.45, 274
+curveTo 157.4816, 274, 164, 282.064, 164, 292
+curveTo 164, 301.936, 157.4816, 310, 149.45, 310
+lineTo 81.55, 310
+curveTo 73.5184, 310, 67, 301.936, 67, 292
+curveTo 67, 282.064, 73.5184, 274, 81.55, 274
+stroke 
+restore 
+setFillColorSpace DeviceGrayCS
+setFillColor 0
+setFlatness 0
+save 
+transform 1, 0, 0, -1, 68.5, 134
+beginText 
+setTextMatrix 12, 0, 0, -12, -23.66895, -3
+dependency p1_font_5
+setFont [object Object], 1
+showText Compile
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 68.5, 134
+beginText 
+setTextMatrix 12, 0, 0, -12, -26.01562, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText LIR 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 68.5, 134
+beginText 
+setTextMatrix 12, 0, 0, -12, -4.21875, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText T
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 68.5, 134
+beginText 
+setTextMatrix 12, 0, 0, -12, 2.671875, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText race
+endText 
+restore 
+setDash , 0
+setFlatness 0.6
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 115.5, 218.5
+lineTo 115.5, 263.6
+stroke 
+restore 
+setFillColorSpace DeviceRgbCS
+setFillColor 0, 0, 0
+moveTo 69, 153.9
+lineTo 72, 161.9
+lineTo 66, 161.9
+closePath 
+moveTo 69, 153.9
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 115.5, 271.6
+lineTo 118.5, 263.6
+lineTo 112.5, 263.6
+closePath 
+moveTo 115.5, 271.6
+stroke 
+restore 
+setLineCap 1
+setLineJoin 1
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 128.7664, 181.5944
+curveTo 142.8428, 162.0649, 151.1042, 141.0521, 171, 123
+curveTo 188.7819, 106.8659, 215.8668, 93.08813, 239.7802, 78.50952
+stroke 
+restore 
+moveTo 200.0425, 351.2214
+lineTo 191.6693, 349.5215
+lineTo 194.8517, 344.435
+closePath 
+moveTo 200.0425, 351.2214
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 246.5425, 74.27863
+lineTo 238.1693, 75.97855
+lineTo 241.3517, 81.06503
+closePath 
+moveTo 246.5425, 74.27863
+stroke 
+restore 
+setLineCap 1
+setLineJoin 1
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 326.7937, 169.4614
+lineTo 371.6037, 182.3461
+stroke 
+restore 
+moveTo 332.7922, 240.9431
+lineTo 325.9327, 246.0371
+lineTo 324.2747, 240.2707
+closePath 
+moveTo 332.7922, 240.9431
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 379.2922, 184.5569
+lineTo 372.4327, 179.4629
+lineTo 370.7747, 185.2293
+closePath 
+moveTo 379.2922, 184.5569
+stroke 
+restore 
+setLineCap 1
+setLineJoin 1
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 433, 218.5
+lineTo 433, 263.6
+stroke 
+restore 
+moveTo 386.5, 153.9
+lineTo 389.5, 161.9
+lineTo 383.5, 161.9
+closePath 
+moveTo 386.5, 153.9
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 433, 271.6
+lineTo 436, 263.6
+lineTo 430, 263.6
+closePath 
+moveTo 433, 271.6
+stroke 
+restore 
+setFillColor 1, 1, 1
+moveTo 345.2, 59.5
+lineTo 427.8, 59.5
+curveTo 437.5704, 59.5, 445.5, 51.436, 445.5, 41.5
+curveTo 445.5, 31.564, 437.5704, 23.5, 427.8, 23.5
+lineTo 345.2, 23.5
+curveTo 335.4296, 23.5, 327.5, 31.564, 327.5, 41.5
+curveTo 327.5, 51.436, 335.4296, 59.5, 345.2, 59.5
+fill 
+setLineCap 1
+setLineJoin 1
+setDash 4,4, 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 391.7, 366
+lineTo 474.3, 366
+curveTo 484.0704, 366, 492, 374.064, 492, 384
+curveTo 492, 393.936, 484.0704, 402, 474.3, 402
+lineTo 391.7, 402
+curveTo 381.9296, 402, 374, 393.936, 374, 384
+curveTo 374, 374.064, 381.9296, 366, 391.7, 366
+stroke 
+restore 
+setFillColorSpace DeviceGrayCS
+setFillColor 0
+setFlatness 0
+save 
+transform 1, 0, 0, -1, 386, 42
+beginText 
+setTextMatrix 12, 0, 0, -12, -17.0127, -3
+dependency p1_font_5
+setFont [object Object], 1
+showText Leave
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 386, 42
+beginText 
+setTextMatrix 12, 0, 0, -12, 17.0127, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText  
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 386, 42
+beginText 
+setTextMatrix 12, 0, 0, -12, -42.02344, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText Compiled 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 386, 42
+beginText 
+setTextMatrix 12, 0, 0, -12, 11.78906, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText T
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 386, 42
+beginText 
+setTextMatrix 12, 0, 0, -12, 18.67969, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText race
+endText 
+restore 
+setDash , 0
+setFlatness 0.6
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 433, 310.5
+lineTo 433, 355.6
+stroke 
+restore 
+setFillColorSpace DeviceRgbCS
+setFillColor 0, 0, 0
+moveTo 386.5, 61.89999
+lineTo 389.5, 69.89999
+lineTo 383.5, 69.89999
+closePath 
+moveTo 386.5, 61.89999
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 433, 363.6
+lineTo 436, 355.6
+lineTo 430, 355.6
+closePath 
+moveTo 433, 363.6
+stroke 
+restore 
+setLineCap 1
+setLineJoin 1
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 458.8565, 365.7113
+curveTo 491.2344, 342.8098, 556.4398, 321.5645, 556, 297
+curveTo 555.593, 274.2682, 498.9706, 248.6815, 464.1686, 224.2059
+stroke 
+restore 
+moveTo 411.2435, 206.0587
+lineTo 415.8825, 198.8837
+lineTo 419.4564, 203.7032
+closePath 
+moveTo 411.2435, 206.0587
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 457.7435, 219.4413
+lineTo 462.3825, 226.6163
+lineTo 465.9564, 221.7968
+closePath 
+moveTo 457.7435, 219.4413
+stroke 
+restore 
+setLineCap 1
+setLineJoin 1
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 404.0253, 365.7333
+curveTo 367.6872, 342.8245, 315.8505, 329.0364, 295, 297
+curveTo 275.7784, 267.4665, 282.8799, 222.4082, 279.9052, 183.2979
+stroke 
+restore 
+moveTo 232.6017, 250.1139
+lineTo 230.4254, 241.8517
+lineTo 236.3947, 242.458
+closePath 
+moveTo 232.6017, 250.1139
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 279.1017, 175.3861
+lineTo 276.9254, 183.6483
+lineTo 282.8947, 183.042
+closePath 
+moveTo 279.1017, 175.3861
+stroke 
+restore 
+setLineCap 1
+setLineJoin 1
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 307.1797, 136.7443
+curveTo 317.1188, 130.8301, 339.2199, 129.5624, 337, 119
+curveTo 335.1062, 109.9889, 315.51, 94.20831, 300.8664, 80.32248
+stroke 
+restore 
+moveTo 248.7072, 350.7978
+lineTo 252.2695, 343.0319
+lineTo 256.4975, 347.2891
+closePath 
+moveTo 248.7072, 350.7978
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 295.2072, 74.70221
+lineTo 298.7695, 82.46814
+lineTo 302.9975, 78.21091
+closePath 
+moveTo 295.2072, 74.70221
+stroke 
+restore 
+setLineCap 1
+setLineJoin 1
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 363, 300
+curveTo 358.6671, 289.6677, 346.3337, 274.4995, 350, 269
+curveTo 352.7497, 264.8754, 364.5005, 266.1877, 375.1254, 266.8203
+stroke 
+restore 
+moveTo 336.6003, 158.5345
+lineTo 328.6562, 161.6796
+lineTo 328.5471, 155.6805
+closePath 
+moveTo 336.6003, 158.5345
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 383.1003, 266.9655
+lineTo 375.1562, 263.8204
+lineTo 375.0471, 269.8195
+closePath 
+moveTo 383.1003, 266.9655
+stroke 
+restore 
+setFillColorSpace DeviceGrayCS
+setFillColor 0
+setFlatness 0
+save 
+transform 1, 0, 0, -1, 209.5, 325
+beginText 
+setTextMatrix 12, 0, 0, -12, -11.34375, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText loop 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 209.5, 325
+beginText 
+setTextMatrix 12, 0, 0, -12, -13.34766, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText edge
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 163.5, 233
+beginText 
+setTextMatrix 12, 0, 0, -12, -8.34082, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText hot
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 163.5, 233
+beginText 
+setTextMatrix 12, 0, 0, -12, -22.34766, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText loop/exit
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 56, 269
+beginText 
+setTextMatrix 12, 0, 0, -12, -13.67578, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText abort 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 56, 269
+beginText 
+setTextMatrix 12, 0, 0, -12, -25.01367, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText recording
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 105.5, 188
+beginText 
+setTextMatrix 12, 0, 0, -12, -20.67773, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText Þ
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 105.5, 188
+beginText 
+setTextMatrix 12, 0, 0, -12, -14.67773, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText nish at 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 105.5, 188
+beginText 
+setTextMatrix 12, 0, 0, -12, -31.69336, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText loop header
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 329.5, 313
+beginText 
+setTextMatrix 12, 0, 0, -12, -40.6875, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText cold/blacklisted
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 329.5, 313
+beginText 
+setTextMatrix 12, 0, 0, -12, -22.34766, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText loop/exit
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 334.5, 264
+beginText 
+setTextMatrix 12, 0, 0, -12, -39.01758, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText compiled trace 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 334.5, 264
+beginText 
+setTextMatrix 12, 0, 0, -12, -15.00879, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText ready
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 289.5, 176.5
+beginText 
+setTextMatrix 12, 0, 0, -12, -38.69531, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText loop edge with 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 289.5, 176.5
+beginText 
+setTextMatrix 12, 0, 0, -12, -30.67969, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText same types
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 496.5, 67
+beginText 
+setTextMatrix 12, 0, 0, -12, -28.68164, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText side exit to 
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 496.5, 67
+beginText 
+setTextMatrix 12, 0, 0, -12, -35.34961, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText existing trace
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 280, 72
+beginText 
+setTextMatrix 12, 0, 0, -12, -23.67773, -3
+dependency p1_font_6
+setFont [object Object], 1
+showText side exit,
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 280, 72
+beginText 
+setTextMatrix 12, 0, 0, -12, -43.69043, 11
+dependency p1_font_6
+setFont [object Object], 1
+showText no existing trace
+endText 
+restore 
+setLineCap 1
+setLineJoin 1
+setFlatness 0.6
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 160.5087, 279.5096
+curveTo 180.3372, 274.0069, 202.278, 280.676, 220, 263
+curveTo 236.0329, 247.0088, 248.6216, 211.0834, 262.4383, 182.2785
+stroke 
+restore 
+setFillColorSpace DeviceRgbCS
+setFillColor 0, 0, 0
+moveTo 219.5025, 250.3572
+lineTo 213.2438, 244.5409
+lineTo 218.6115, 241.8598
+closePath 
+moveTo 219.5025, 250.3572
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 266.0025, 175.1428
+lineTo 259.7438, 180.9591
+lineTo 265.1115, 183.6402
+closePath 
+moveTo 266.0025, 175.1428
+stroke 
+restore 
+setLineCap 1
+setLineJoin 1
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 277, 4
+lineTo 276.7784, 26.60049
+stroke 
+restore 
+moveTo 230.2, 390.8999
+lineTo 233.2783, 398.8701
+lineTo 227.2786, 398.9289
+closePath 
+moveTo 230.2, 390.8999
+fill 
+setLineCap 0
+setLineJoin 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 276.7, 34.6001
+lineTo 279.7783, 26.62991
+lineTo 273.7786, 26.57108
+closePath 
+moveTo 276.7, 34.6001
+stroke 
+restore 
+setFillColor 1, 1, 1
+moveTo 439.65, 378.5
+lineTo 496.35, 378.5
+curveTo 503.0568, 378.5, 508.5, 373.572, 508.5, 367.5
+curveTo 508.5, 361.428, 503.0568, 356.5, 496.35, 356.5
+lineTo 439.65, 356.5
+curveTo 432.9432, 356.5, 427.5, 361.428, 427.5, 367.5
+curveTo 427.5, 373.572, 432.9432, 378.5, 439.65, 378.5
+fill 
+setLineCap 1
+setLineJoin 1
+setDash 4,4, 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 486.15, 47
+lineTo 542.85, 47
+curveTo 549.5568, 47, 555, 51.92801, 555, 58
+curveTo 555, 64.07199, 549.5568, 69, 542.85, 69
+lineTo 486.15, 69
+curveTo 479.4432, 69, 474, 64.07199, 474, 58
+curveTo 474, 51.92801, 479.4432, 47, 486.15, 47
+stroke 
+restore 
+setFillColorSpace DeviceGrayCS
+setFillColor 0
+setFlatness 0
+save 
+transform 1, 0, 0, -1, 467.5, 368
+beginText 
+setTextMatrix 12, 0, 0, -12, -26.34961, 4
+dependency p1_font_6
+setFont [object Object], 1
+showText Overhead
+endText 
+restore 
+save 
+transform 1, 0, 0, -1, 467.5, 368
+beginText 
+setTextMatrix 12, 0, 0, -12, 26.34961, 4
+dependency p1_font_6
+setFont [object Object], 1
+showText  
+endText 
+restore 
+setFlatness 0.6
+setFillColorSpace DeviceRgbCS
+setFillColor 0.92, 0.92, 0.92
+moveTo 435.45, 348.5
+lineTo 500.55, 348.5
+curveTo 508.2504, 348.5, 514.5, 343.572, 514.5, 337.5
+curveTo 514.5, 331.428, 508.2504, 326.5, 500.55, 326.5
+lineTo 435.45, 326.5
+curveTo 427.7496, 326.5, 421.5, 331.428, 421.5, 337.5
+curveTo 421.5, 343.572, 427.7496, 348.5, 435.45, 348.5
+fill 
+setDash , 0
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 481.95, 77
+lineTo 547.05, 77
+curveTo 554.7504, 77, 561, 81.92801, 561, 88
+curveTo 561, 94.07199, 554.7504, 99, 547.05, 99
+lineTo 481.95, 99
+curveTo 474.2496, 99, 468, 94.07199, 468, 88
+curveTo 468, 81.92801, 474.2496, 77, 481.95, 77
+stroke 
+restore 
+setFillColorSpace DeviceGrayCS
+setFillColor 0
+setFlatness 0
+save 
+transform 1, 0, 0, -1, 467.5, 338
+beginText 
+setTextMatrix 12, 0, 0, -12, -30.35156, 4
+dependency p1_font_6
+setFont [object Object], 1
+showText Interpreting
+endText 
+restore 
+setFlatness 0.6
+setFillColor 0.75
+moveTo 435.45, 318.5
+lineTo 500.55, 318.5
+curveTo 508.2504, 318.5, 514.5, 314.02, 514.5, 308.5
+curveTo 514.5, 302.98, 508.2504, 298.5, 500.55, 298.5
+lineTo 435.45, 298.5
+curveTo 427.7496, 298.5, 421.5, 302.98, 421.5, 308.5
+curveTo 421.5, 314.02, 427.7496, 318.5, 435.45, 318.5
+fill 
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+moveTo 481.95, 107
+lineTo 547.05, 107
+curveTo 554.7504, 107, 561, 111.48, 561, 117
+curveTo 561, 122.52, 554.7504, 127, 547.05, 127
+lineTo 481.95, 127
+curveTo 474.2496, 127, 468, 122.52, 468, 117
+curveTo 468, 111.48, 474.2496, 107, 481.95, 107
+stroke 
+restore 
+setFillColor 0
+setFlatness 0
+save 
+transform 1, 0, 0, -1, 467.5, 309
+beginText 
+setTextMatrix 12, 0, 0, -12, -17.00684, 4
+dependency p1_font_6
+setFont [object Object], 1
+showText Native
+endText 
+restore 
+setFlatness 0.6
+save 
+transform 1, 0, 0, -1, -46.5, 425.5
+rectangle 461, 15, 113, 126
+stroke 
+2restore 
+save 
+rectangle 414.5, 284.5, 113, 126
+clip 
+endPath 
+setFillColorSpace DeviceGrayCS
+setFillColor 0
+setFlatness 0.6
+save 
+transform 1, 0, 0, -1, 470.5, 348
+beginText 
+setTextMatrix 12, 0, 0, -12, -34.34473, -42
+dependency p1_font_5
+setFont [object Object], 1
+showText Symbol Key
+endText 
+2restore 
+dependency p1_font_5, p1_font_6, p1_font_6, p1_font_5, p1_font_6, p1_font_5, p1_font_6, p1_font_6, p1_font_6, p1_font_5, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_5, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_5, p1_font_6, p1_font_6, p1_font_6, p1_font_5, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_6, p1_font_5
+paintFormXObjectEnd 
+2restore 
+transform 1, 0, 0, 1, 0, -11.2876
+save 
+setDash , 0
+setLineCap 0
+setLineWidth 0.3288
+moveTo 0, 0.1644
+lineTo 239.1034, 0.1644
+stroke 
+restore 
+transform 1, 0, 0, 1, -317.0137, -403.4809
+beginText 
+dependency p1_font_4
+setFont [object Object], 8.9664
+moveText 317.0137, 393.318
+showSpacedText Figur,18,e,-312,2.
+dependency p1_font_0
+setFont [object Object], 8.9664
+moveText 39.2501, 0
+showSpacedText State,-312,machine,-313,describing,-312,the,-313,major,-312,acti,25,vities,-313,of,-312,T,35,race-
+moveText -39.2501, -9.9626
+showSpacedText Monk,10,e,15,y,-352,and,-353,the,-352,conditions,-352,that,-352,cause,-353,transitions,-352,to,-352,a,-352,ne,25,w,-353,acti,25,v-
+moveText 0, -9.9627
+showSpacedText ity,65,.,-400,In,-399,the,-400,dark,-399,box,,-400,TM,-399,e,15,x,15,ecutes,-399,JS,-400,as,-399,compiled,-400,traces.,-399,In,-400,the
+moveText 0, -9.9626
+showSpacedText light,-244,gray,-244,box,15,es,,-243,TM,-244,e,15,x,15,ecutes,-244,JS,-244,in,-243,the,-244,standard,-244,interpreter,55,.,-244,White
+moveText 0, -9.9627
+showSpacedText box,15,es,-348,are,-349,o,15,v,15,erhead.,-348,Thus,,-349,to,-348,maximize,-348,performance,,-349,we,-348,need,-349,to
+moveText 0, -9.9626
+showSpacedText maximize,-233,time,-234,spent,-233,in,-233,the,-234,dark,10,est,-233,box,-233,and,-234,minimize,-233,time,-233,spent,-234,in
+moveText 0, -9.9626
+showSpacedText the,-241,white,-242,box,15,es.,-241,The,-242,best,-241,case,-242,is,-241,a,-242,loop,-241,where,-242,the,-241,types,-242,at,-241,the,-242,loop
+moveText 0, -9.9627
+showSpacedText edge,-243,are,-243,the,-242,same,-243,as,-243,the,-243,types,-243,on,-243,entrythen,-242,TM,-243,can,-243,stay,-243,in,-243,nati,25,v,15,e
+moveText 0, -9.9626
+showSpacedText code,-250,until,-250,the,-250,loop,-250,is,-250,done.
+moveText 0, -28.4956
+showSpacedText a,-303,set,-303,of,-304,industry,-303,benchmarks.,-303,The,-303,paper,-303,ends,-303,with,-304,conclusions,-303,in
+moveText 0, -9.9626
+showSpacedText Section,-230,9,-230,and,-231,an,-230,outlook,-230,on,-230,future,-231,w,10,ork,-230,is,-230,presented,-230,in,-230,Section,-231,10.
+dependency p1_font_4
+setFont [object Object], 10.9589
+moveText 0, -23.4028
+showSpacedText 2.,-1000,Ov,10,er,10,view:,-250,Example,-250,T,74,racing,-250,Run
+dependency p1_font_0
+setFont [object Object], 8.9664
+moveText 0, -13.9477
+showSpacedText This,-434,section,-434,pro,15,vides,-434,an,-434,o,15,v,15,ervie,25,w,-434,of,-434,our,-435,system,-434,by,-434,describing
+moveText 0, -9.9626
+showSpacedText ho,25,w,-446,T,35,raceMonk,10,e,15,y,-447,e,15,x,15,ecutes,-446,an,-447,e,15,xample,-446,program.,-446,The,-447,e,15,xample
+moveText 0, -9.9627
+showSpacedText program,,-242,sho,25,wn,-241,in,-242,Figure,-241,1,,-242,computes,-241,the,-242,rst,-242,100,-241,prime,-242,numbers
+moveText 0, -9.9626
+showSpacedText with,-196,nested,-196,loops.,-196,The,-196,narra,1,ti,25,v,15,e,-196,should,-196,be,-196,read,-196,along,-196,with,-196,Figure,-196,2,
+moveText 0, -9.9627
+showSpacedText which,-296,describes,-296,the,-296,acti,25,vities,-296,T,35,raceMonk,10,e,15,y,-296,performs,-296,and,-297,when,-296,it
+moveText 0, -9.9626
+showSpacedText transitions,-250,between,-250,the,-250,loops.
+moveText 11.9552, -9.9626
+showSpacedText T,35,raceMonk,10,e,15,y,-336,al,10,w,10,ays,-336,be,15,gins,-335,e,15,x,15,ecuting,-336,a,-336,program,-336,in,-336,the,-335,byte-
+moveText -11.9552, -9.9627
+showSpacedText code,-363,interpreter,55,.,-363,Ev,15,ery,-363,loop,-364,back,-363,edge,-363,is,-363,a,-363,potential,-364,tra,1,ce,-364,point.
+moveText 0, -9.9626
+showSpacedText When,-382,the,-381,interpreter,-382,crosses,-382,a,-382,loop,-381,edge,,-382,T,35,raceMonk,10,e,15,y,-382,in,40,v,20,ok,10,es
+moveText 0, -9.9627
+showSpacedText the
+dependency p1_font_1
+setFont [object Object], 8.9664
+moveText 13.5447, 0
+showSpacedText tr,15,ace,-289,monitor
+dependency p1_font_0
+setFont [object Object], 8.9664
+moveText 49.2753, 0
+showSpacedText ,,-289,which,-288,may,-289,decide,-288,to,-289,record,-289,or,-288,e,15,x,15,ecute,-289,a,-289,nat,1,i,25,v,15,e
+moveText -62.82, -9.9626
+showSpacedText trace.,-246,At,-246,the,-246,start,-247,of,-246,e,15,x,15,ecution,,-246,there,-246,are,-246,no,-246,compiled,-246,traces,-247,yet,,-246,so
+moveText 0, -9.9626
+showSpacedText the,-199,trace,-200,monitor,-199,counts,-200,the,-199,number,-200,of,-199,times,-200,each,-199,loop,-200,back,-199,edge,-200,is
+moveText 0, -9.9627
+showSpacedText e,15,x,15,ecuted,-220,until,-220,a,-221,loop,-220,becomes
+dependency p1_font_1
+setFont [object Object], 8.9664
+moveText 109.2092, 0
+showSpacedText hot
+dependency p1_font_0
+setFont [object Object], 8.9664
+moveText 11.4589, 0
+showSpacedText ,,-220,currently,-220,after,-221,2,-220,crossings.,-220,Note
+moveText -120.6681, -9.9626
+showSpacedText that,-207,the,-208,w,10,ay,-207,our,-207,loops,-208,are,-207,compiled,,-207,the,-207,loop,-208,edge,-207,is,-207,crossed,-208,before
+moveText 0, -9.9627
+showSpacedText entering,-275,the,-275,loop,,-276,so,-275,the,-275,second,-275,crossing,-275,occurs,-276,immediat,1,ely,-276,after
+moveText 0, -9.9626
+showSpacedText the,-250,rst,-250,iteration.
+moveText 11.9552, -9.9626
+showSpacedText Here,-469,is,-469,the,-469,sequence,-470,of,-469,e,25,v,15,ents,-469,brok,10,en,-469,do,25,wn,-469,by,-469,outer,-469,loop
+moveText -11.9552, -9.9627
+showSpacedText iteration:
+endText 

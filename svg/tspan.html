@@ -3,14 +3,69 @@
 <head>
 </head>
 <body>
-  <svg width="200px" height="200px">
-    <text fill="black" x="0px" y="50px"><tspan>H</tspan><tspan y="40px" x="40px">e</tspan><tspan>l</tspan><tspan>l</tspan><tspan>o</tspan></text>
-    <text fill="black" x="0px" y="20px" font-size="19.0px">Foo Hello World</text>
-    <text fill="black" x="0px" y="40px" font-size="19.2px">Foo Hello World</text>
-    <text fill="black" x="0px" y="60px" font-size="19.4px">Foo Hello World</text>
-    <text fill="black" x="0px" y="80px" font-size="19.6px">Foo Hello World</text>
-    <text fill="black" x="0px" y="100px" font-size="19.8px">Foo Hello World</text>
-    <text fill="black" x="0px" y="120px" font-size="20.0px">Foo Hello World</text>
+  <svg width="300" height="300">
+    <defs>
+
+
+    <g id="shapes">
+    <rect x="0" y="50" width="100" height="50" style="fill: #999;"/>
+    <circle cx="25" cy="25" r="25" style="fill: #666;"/>
+    <polygon id="shape2" points="30 0 80 0 80 100" style="fill: #ccc;"/>
+    </g>
+
+    <g id="words">
+    <text  x="0"  y="19" style="font-size: 12;">
+    <tspan x="0"  y="19">If you have form'd a circle</tspan>
+    <tspan x="12" y="33">to go into,</tspan>
+    <tspan x="0"  y="47">Go into it yourself</tspan>
+    <tspan x="12" y="61">and see how you would do.</tspan>
+    <tspan x="50" y="80">&#xad;William Blake</tspan>
+    </text>
+    </g>
+    </defs>
+
+    <clipPath id="circularPath">
+      <path d="M150 0 L75 200 L225 200 Z" />
+    </clipPath>
+    <g id="words" style="clip-path: url(#circularPath);">
+    <text  x="0"  y="19" style="font-size: 12;">
+      <tspan x="0"  y="19">If you have form'd a circle</tspan>
+      <tspan x="12" y="33">to go into,</tspan>
+      <tspan x="0"  y="47">Go into it yourself</tspan>
+      <tspan x="12" y="61">and see how you would do.</tspan>
+      <tspan x="50" y="80">&#xad;William Blake</tspan>
+    </text>
+    </g>
   </svg>
+  
+  
+  <svg width="200px" height="200px">
+    <clipPath id="c1">
+      <rect x="0" y="0" width="100" height="100"/>
+    </clipPath>
+    <g clip-path="M 0 0 L 100 100 L 0 100 M 0 0">
+      <text fill="black" x="0px" y="50px"><tspan>H</tspan><tspan y="40px" x="40px">e</tspan><tspan>l</tspan><tspan>l</tspan><tspan>o</tspan></text>
+      <text fill="black" x="0px" y="20px" font-size="19.0px">Foo Hello World</text>
+      <text fill="black" x="0px" y="40px" font-size="19.2px">Foo Hello World</text>
+      <text fill="black" x="0px" y="60px" font-size="19.4px">Foo Hello World</text>
+      <text fill="black" x="0px" y="80px" font-size="19.6px">Foo Hello World</text>
+      <text fill="black" x="0px" y="100px" font-size="19.8px">Foo Hello World</text>
+      <text fill="black" x="0px" y="120px" font-size="20.0px">Foo Hello World</text>
+    </g>
+  </svg>
+  <canvas id="canvas" width="200" height="200" style="border: 1px solid red"></canvas>
+  <script>
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext('2d');
+    
+    ctx.beginPath();
+    ctx.rect(50, 50, 100, 100);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.fillStyle = 'blue';
+    ctx.rect(80, 80, 100, 100);
+    ctx.fill();
+  </script>
 </body>
 </html>
