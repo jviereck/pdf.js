@@ -170,18 +170,12 @@ SvgGraphics.prototype = {
       name = 'sans-serif';
     }
 
-    state.font = fontObj;
-    state.fontSize = size;
-
     var name = fontObj.loadedName || 'sans-serif';
-    
-    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('font-family', name);
-    g.setAttribute('font-size',   size + 'px');
-    state.append(g);
+    state.font = fontObj;
+    state.fontName = name;
+    state.fontSize = size;
+    state.fontUsed = false;
 
-    // The new g node is the parent node for the following ones
-    state.node = g;
   },
   beginText: function() {
     var state = this.state;
@@ -202,6 +196,26 @@ SvgGraphics.prototype = {
       return;
     }
 
+    // If the font isn't used yet, it needs to get added to the svg object
+    // before any text using it is added.
+    if (!state.fontUsed) {
+      state.fontUsed = true;
+
+      var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('font-family', state.fontName);
+      g.setAttribute('font-size',   state.fontSize + 'px');
+      
+      // If there is a certain node the font should get added to, use that node
+      // as the parent one. Otherwise, use just the current node.
+      if (state.fontInsertNode) {
+        state.fontInsertNode.appendChild(g);
+      } else {
+        state.fontInsertNode = state.node;
+        state.append(g);
+      }
+      // The new g node is the parent node for the following ones.
+      state.node = g;
+    }
 
     var fontSize = state.fontSize;
 
