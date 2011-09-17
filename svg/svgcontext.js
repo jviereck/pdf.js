@@ -68,14 +68,59 @@ var SvgGraphicsState = (function() {
   return SvgGraphicsState;
 })();
 
+function SvgNode(type) {
+  this.type = type;
+  this.children = [];
+  this.attributes = {};
+}
+
+SvgNode.prototype = {
+  type: null,
+  text: null,
+  children: null,
+  attributes: null,
+  
+  appendChild: function(child) {
+    this.children.push(child);
+  },
+  
+  setAttribute: function(key, value) {
+    this.attributes[key] = value
+  },
+  
+  set textContent(value) {
+    this.text = value;
+  },
+  
+  getMarkup: function() {
+    var childMarkup = "";
+    var children = this.children;
+    var childrenLen = this.children.length;
+    for (var i = 0; i < childrenLen; i++) {
+      childMarkup += children[i].getMarkup();
+    }
+    
+    var attrStr = "";
+    var attrs = this.attributes;
+    var attrsKeys = Object.keys(attrs);
+    var attrsKeysLen = attrsKeys.length;
+    for (var i = 0; i < attrsKeysLen; i++) {
+      attrStr += attrsKeys[i] + "='" + attrs[attrsKeys[i]] + "' ";
+    }
+    
+    return "<" + this.type + " " + attrStr + ">" + childMarkup + (this.text || "") + "</" + this.type + ">";
+  }
+}
+
 function SvgGraphics(holder) {
-  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  // var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  var svg = new SvgNode('svg');
   svg.setAttribute('version', '1.2');
   svg.setAttribute('width', '1000px');
   svg.setAttribute('height', '2000px');
 
   this.append = function() {
-    holder.appendChild(svg);
+    holder.innerHTML = svg.getMarkup();
   }
 
   this.$private = {
@@ -88,9 +133,9 @@ function SvgGraphics(holder) {
   this.state = new SvgGraphicsState();
   this.state.transMatrix = [1, 0, 0, 0, 1, 0];
 
-  var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  var g = new SvgNode("g");
   g.setAttribute('transform', 'scale(' + 1.5 + ',' + 1.5 + ')');
-  svg.appendChild(g)
+  svg.appendChild(g);
   this.state.node = g;
 }
 
@@ -201,7 +246,8 @@ SvgGraphics.prototype = {
     if (!state.fontUsed) {
       state.fontUsed = true;
 
-      var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      // var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g = new SvgNode('g');
       g.setAttribute('font-family', state.fontName);
       g.setAttribute('font-size',   state.fontSize + 'px');
       
@@ -227,7 +273,8 @@ SvgGraphics.prototype = {
 
     var p = state.transPoint(state.x, state.y);
    
-    var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    // var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    var svgText = new SvgNode('text');
     svgText.setAttribute('y', this.height-p[1] + 'px');
     svgText.setAttribute('fill', 'black');
 
@@ -270,7 +317,8 @@ SvgGraphics.prototype = {
             width += charWidth;
         }
 
-        var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        // var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        var tspan = new SvgNode('tspan');
         tspan.setAttribute('x', (state.x - xStart) +   'px');
         tspan.textContent = text;
         svgText.appendChild(tspan);
