@@ -89,7 +89,7 @@ function SvgGraphics(holder) {
   this.state.transMatrix = [1, 0, 0, 0, 1, 0];
 
   var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  g.setAttribute('transform', 'scale(' + 2 + ',' + 2 + ')');
+  g.setAttribute('transform', 'scale(' + 1.5 + ',' + 1.5 + ')');
   svg.appendChild(g)
   this.state.node = g;
 }
@@ -228,7 +228,6 @@ SvgGraphics.prototype = {
     var p = state.transPoint(state.x, state.y);
    
     var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    svgText.setAttribute('x', p[0] + 'px');
     svgText.setAttribute('y', this.height-p[1] + 'px');
     svgText.setAttribute('fill', 'black');
 
@@ -261,14 +260,21 @@ SvgGraphics.prototype = {
 
           //ctx.fillText(text.charAt(i), 0, 0);
           //ctx.translate(charWidth, 0);
-          width += charWidth;
+          // var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+          // tspan.setAttribute('x', (state.x - xStart) +   'px');
+          // tspan.textContent = text.charAt(n);
+          // svgText.appendChild(tspan);
+
+          // state.x += charWidth;
+          
+            width += charWidth;
         }
 
         var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
         tspan.setAttribute('x', (state.x - xStart) +   'px');
         tspan.textContent = text;
         svgText.appendChild(tspan);
-
+        
         state.x += width;
       } else {
         malformed('TJ array element ' + e + " isn't string or num");

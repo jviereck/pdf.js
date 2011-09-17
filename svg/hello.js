@@ -23,37 +23,56 @@ var binaryGet = function(url, callback){
 //
 var page;
 var ir;
-binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
-  CanvasGraphics = SvgGraphics;
 
-  //
-  // Instantiate PDFDoc with PDF data
-  //
+var useCanvas = document.location.hash;
+binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
   var pdf = new WorkerPDFDoc(data);
-      page = pdf.getPage(1);
+  var page = pdf.getPage(1);
   var scale = 1.5;
 
-  //
-  // Prepare canvas using PDF page dimensions
-  //
-  
-  var container = document.getElementById("container");
-  
+  var canvas = document.getElementById("the-canvas");
+  if (useCanvas) {
+    //
+    // Prepare canvas using PDF page dimensions
+    //
+    var context = canvas.getContext("2d");
+    canvas.height = page.height * scale;
+    canvas.width = page.width * scale;  
 
-  //
-  // Render PDF page into canvas context
-  //
-  page.startRendering(container, function() {
-    ir = page.page.IRQueue;
-    var argsArray = ir.argsArray;
-    var fnArray = ir.fnArray;
+    //
+    // Render PDF page into canvas context
+    //
+    page.startRendering(context, function() {
+      setTimeout(function() {
+        console.log("Rendering canvas", Date.now() - startTime);        
+      }, 10);
+    });
+  } else {    
+    canvas.style.display = "none";
     
-    var objs = {};
-    for (var i = 0; i < fnArray.length; i++) {
-      objs[fnArray[i]] = true;
-      console.log(fnArray[i], argsArray[i].join(", "));
-    }
-    console.log(Object.keys(objs));
-  });
-  //canvas.append();
+    // Thanks Brendan for let us do this in JS!
+    CanvasGraphics = SvgGraphics;
+    var container = document.getElementById("container");
+
+    //
+    // Render PDF page into canvas context
+    //
+    page.startRendering(container, function() {
+      setTimeout(function() {
+        console.log("Rendering svg", Date.now() - startTime);
+      }, 10);
+
+      
+      ir = page.page.IRQueue;
+      var argsArray = ir.argsArray;
+      var fnArray = ir.fnArray;
+
+      // var objs = {};
+      // for (var i = 0; i < fnArray.length; i++) {
+      //   objs[fnArray[i]] = true;
+      //   console.log(fnArray[i], argsArray[i].join(", "));
+      // }
+      // console.log(Object.keys(objs));
+    });
+  }
 });

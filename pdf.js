@@ -3425,7 +3425,7 @@ var Page = (function() {
       var IRQueue = this.IRQueue;
       
       var self = this;
-      var startTime = Date.now();
+      window.startTime = Date.now();
       function next() {
         startIdx = gfx.executeIRQueue(IRQueue, startIdx, next);
         if (startIdx == length) {
@@ -5235,6 +5235,7 @@ var CanvasGraphics = (function() {
       }
       current.x += width;
 
+      // ctx.fillText(text, 0, 0);
       this.ctx.restore();
     },
     showSpacedText: function(arr) {
