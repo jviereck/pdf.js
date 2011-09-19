@@ -5229,13 +5229,13 @@ var CanvasGraphics = (function() {
         if (charcode == 32)
           charWidth += wordSpacing;
 
-        ctx.fillText(text.charAt(i), 0, 0);
-        ctx.translate(charWidth, 0);
+        // ctx.fillText(text.charAt(i), 0, 0);
+        // ctx.translate(charWidth, 0);
         width += charWidth;
       }
       current.x += width;
 
-      // ctx.fillText(text, 0, 0);
+      ctx.fillText(text, 0, 0);
       this.ctx.restore();
     },
     showSpacedText: function(arr) {

@@ -27,7 +27,7 @@ var ir;
 var useCanvas = document.location.hash;
 binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
   var pdf = new WorkerPDFDoc(data);
-  var page = pdf.getPage(2);
+  var page = pdf.getPage(1);
   var scale = 1.5;
 
   var canvas = document.getElementById("the-canvas");
@@ -63,6 +63,8 @@ binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
     });
   } else {    
     canvas.style.display = "none";
+    
+    window.RESOLVE_FONTS = true;
     
     // Thanks Brendan for let us do this in JS!
     CanvasGraphics = SvgGraphics;

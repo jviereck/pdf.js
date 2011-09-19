@@ -237,6 +237,9 @@ var WorkerPDFDoc = (function() {
         Objects.resolve(objId, fontObj);
       } else {
         Objects.setData(objId, fontObj);
+        if (window.RESOLVE_FONTS) {
+          Objects.resolve(objId);
+        }
         FontLoader.bind(fontObj);
       }
     });

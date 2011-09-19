@@ -238,7 +238,9 @@ var FontLoader = {
     } else {
       // This font isn't fully supported yet. Resolve the object such that
       // the execution continues but do nothing else.
-      Objects.resolve(objId);
+      if (!window.RESOLVE_FONTS) {
+        Objects.resolve(objId);
+      }
       return;
     }
 
@@ -253,7 +255,9 @@ var FontLoader = {
         if (measure[i] !== before[i]) {
             console.log("loaded font", objId, before, measure, Date.now() - start);
             delete this.loading[objId];
-            Objects.resolve(objId);
+            if (!window.RESOLVE_FONTS) {
+              Objects.resolve(objId);
+            }
             return;
         }        
       }
@@ -348,7 +352,9 @@ var FontLoader = {
       document.body.appendChild(frame);
       
       frame.onload = function() {
-        Objects.resolve(fontObj.loadedName);
+        if (!window.RESOLVE_FONTS) {
+          Objects.resolve(fontObj.loadedName);
+        }
       }
       /** Hack end */
   }
