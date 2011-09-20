@@ -260,6 +260,41 @@ var FontLoader = {
     return widths;
   },
   
+  measureWidth: function(fontObj, str) {
+        var ctx = this.ctx;
+    var canvas = this.canvas;
+    
+    // Set the width of the canvas based on the length of the test string.
+    canvas.width = this.width;
+    
+    // THe fonts used as fallback.
+    var fallbacks = [ 'Arial', '"Courier New"' ];
+    
+    var widths = [];
+    for (var n = 0; n < fallbacks.length; n++) {
+      // Choose a large font size as there are no sub-pixel returned from
+      // measureText.
+      var font = fontObj.getRule(1000, fallbacks[n]);
+      ctx.font = font;
+      
+      widths.push(ctx.measureText(str).width);
+    }
+    
+    // FOR DEBUGGING
+    // var ctx = this.ctx2;
+    // ctx.fillStyle = "white";
+    // ctx.fillRect(0, 0, this.width, 30);
+    // ctx.fillStyle = "black";
+    // for (var n = 0; n < fallbacks.length; n++) {
+    //   var font = fontObj.getRule(10, fallbacks[n]);
+    //   ctx.font = font;
+    //   
+    //   ctx.fillText(str, 0.5, 10.5 + n * 10);
+    // }
+    // 
+    return widths;
+  },
+  
   /**
    * Attaches a fontObj to the DOM and calls Objects.resolve(objId) once
    * the font is loaded.
@@ -301,10 +336,25 @@ var FontLoader = {
       delete self.loading[objId]; // DEBUG INFO
       Objects.resolve(objId);
     };
+    
+    function buildWidth() {
+      var width = 0;
+      var str = "";
+      for (var enc in encoding) {
+        if (encoding[enc].width != 500) {
+          width += encoding[enc].width;
+          str += String.fromCharCode(encoding[enc].unicode);
+        }
+      }
+      var measureWidth = self.measureWidth(fontObj, str);
+      var measureWidthAll = self.measureWidth(fontObj, testStr);
+      console.log('width font', objId, width, measureWidth, measureWidthAll);
+    }
 
     // `sawEmpty` keeps track if the font was seen in between as "empty". Empty
     // means the rendering output was empty/blank/no output at all.
     var sawEmpty = false;
+    var SAW_EMPTY_TIMEOT = 50;
     
     // This function determs if the font loaded. Basically, if the measurement
     // is not the same as it was before the font was attached to the DOM, the
@@ -315,13 +365,20 @@ var FontLoader = {
       var measure = this.measure(fontObj, testStr);
       
       if (measure[0] === measure[1] && measure[0] === this.empty) {
+        var width = this.measureWidth(fontObj, testStr);
+        if (width[0] == width[1]) {
+          resolve();
+          console.log('font renders empty but width matches', objId);  // DEBUG
+          return;
+        }
         if (!sawEmpty) {
           sawEmpty = Date.now();
           setTimeout(check, 0);
         } else {
-          if (Date.now() - sawEmpty > 100) {
+          if (Date.now() - sawEmpty > SAW_EMPTY_TIMEOT) {
             resolve();
             console.log('font renders empty timeout', objId);  // DEBUG
+            buildWidth();
           } else {
             setTimeout(check, 0);
           }
@@ -335,12 +392,19 @@ var FontLoader = {
           // the font is about to get loaded but isn't done yet. Shedule to
           // check back later.
           if (measure[i] === this.empty) {
+            var width = this.measureWidth(fontObj, testStr);
+            if (width[0] == width[1]) {
+              resolve();
+              console.log('font renders empty but width matches', objId);  // DEBUG
+              return;
+            }
             // If we see a font beeing morer then 100ms empty assume the font
             // "is" empty and mark it as resolved.
             if (sawEmpty) {
-              if (Date.now() - sawEmpty > 100) {
+              if (Date.now() - sawEmpty > SAW_EMPTY_TIMEOT) {
                 resolve();
                 console.log('font renders empty timeout', objId);  // DEBUG
+                buildWidth();
               }
             } else {
               sawEmpty = Date.now();
