@@ -330,11 +330,14 @@ var FontLoader = {
     // Add the font css to the DOM - let the loading begin!
     this.bindDOM(fontObj);
     
+    var start = Date.now();
+    
     // Once the font is loaded, this function is called to mark the object
     // corresponding to the font as beeing loaded.
     function resolve() {
       delete self.loading[objId]; // DEBUG INFO
       Objects.resolve(objId);
+      console.log("=== resolve:", objId, Date.now() - start);
     };
     
     function buildWidth() {
@@ -354,7 +357,7 @@ var FontLoader = {
     // `sawEmpty` keeps track if the font was seen in between as "empty". Empty
     // means the rendering output was empty/blank/no output at all.
     var sawEmpty = false;
-    var SAW_EMPTY_TIMEOT = 50;
+    var SAW_EMPTY_TIMEOT = 200;
     
     // This function determs if the font loaded. Basically, if the measurement
     // is not the same as it was before the font was attached to the DOM, the
@@ -366,14 +369,19 @@ var FontLoader = {
       
       if (measure[0] === measure[1] && measure[0] === this.empty) {
         var width = this.measureWidth(fontObj, testStr);
-        if (width[0] == width[1]) {
-          resolve();
-          console.log('font renders empty but width matches', objId);  // DEBUG
-          return;
-        }
+        // if (width[0] == width[1]) {
+        //   resolve();
+        //   console.log('font renders empty but width matches', objId, width);  // DEBUG
+        //   return;
+        // } else {
+        //   setTimeout(check, 0);
+        //   return;
+        // }
         if (!sawEmpty) {
           sawEmpty = Date.now();
           setTimeout(check, 0);
+          console.log("sawEmpty#1");
+          buildWidth();
         } else {
           if (Date.now() - sawEmpty > SAW_EMPTY_TIMEOT) {
             resolve();
@@ -393,11 +401,14 @@ var FontLoader = {
           // check back later.
           if (measure[i] === this.empty) {
             var width = this.measureWidth(fontObj, testStr);
-            if (width[0] == width[1]) {
-              resolve();
-              console.log('font renders empty but width matches', objId);  // DEBUG
-              return;
-            }
+            // if (width[0] == width[1]) {
+            //   resolve();
+            //   console.log('font renders empty but width matches', objId);  // DEBUG
+            //   return;
+            // } else {
+            //   setTimeout(check, 0);
+            //   return;
+            // }
             // If we see a font beeing morer then 100ms empty assume the font
             // "is" empty and mark it as resolved.
             if (sawEmpty) {
@@ -408,11 +419,13 @@ var FontLoader = {
               }
             } else {
               sawEmpty = Date.now();
+              buildWidth();
               console.log('font renders empty', objId, testStr);  // DEBUG
               setTimeout(check, 0);              
             }
           } else {
             resolve();
+            buildWidth();
             console.log('font loaded', objId);  // DEBUG
           }
           return;
