@@ -196,6 +196,7 @@ var FontLoader = {
     var canvas = this.canvas = document.createElement("canvas");
     canvas.id = "foo"
     canvas.setAttribute('style', 'position: absolute;top: 0px;left: 0px;z-index: 100;border: 1px solid red;');
+    canvas.width = "" + this.width;
     canvas.height = "10";
   
     var ctx = canvas.getContext("2d");
@@ -225,7 +226,7 @@ var FontLoader = {
     var canvas = this.canvas;
     
     // Set the width of the canvas based on the length of the test string.
-    canvas.width = str.length * 10;
+    canvas.width = this.width;
     
     // THe fonts used as fallback.
     var fallbacks = [ 'Arial', '"Courier New"' ];
@@ -313,6 +314,21 @@ var FontLoader = {
     var check = function() {
       var measure = this.measure(fontObj, testStr);
       
+      if (measure[0] === measure[1] && measure[0] === this.empty) {
+        if (!sawEmpty) {
+          sawEmpty = Date.now();
+          setTimeout(check, 0);
+        } else {
+          if (Date.now() - sawEmpty > 100) {
+            resolve();
+            console.log('font renders empty timeout', objId);  // DEBUG
+          } else {
+            setTimeout(check, 0);
+          }
+        }
+        return;
+      }
+      
       for (var i = 0; i < measure.length; i++) {
         if (measure[i] !== before[i]) {
           // If the rendering has changed *BUT* the rendering is empty now,
@@ -321,9 +337,11 @@ var FontLoader = {
           if (measure[i] === this.empty) {
             // If we see a font beeing morer then 100ms empty assume the font
             // "is" empty and mark it as resolved.
-            if (sawEmpty && Date.now() - sawEmpty > 100) {
-              resolve();
-              console.log('font renders empty timeout', objId);  // DEBUG
+            if (sawEmpty) {
+              if (Date.now() - sawEmpty > 100) {
+                resolve();
+                console.log('font renders empty timeout', objId);  // DEBUG
+              }
             } else {
               sawEmpty = Date.now();
               console.log('font renders empty', objId, testStr);  // DEBUG
