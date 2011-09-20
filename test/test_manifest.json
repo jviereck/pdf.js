@@ -1,27 +1,6 @@
 [
-    {  "id": "tracemonkey-eq",
-       "file": "pdfs/tracemonkey.pdf",
-       "rounds": 1,
-       "type": "eq"
-    },
-    {  "id": "tracemonkey-fbf",
-       "file": "pdfs/tracemonkey.pdf",
-       "rounds": 2,
-       "type": "fbf"
-    },
-    {  "id": "html5-canvas-cheat-sheet-load",
-       "file": "pdfs/canvas.pdf",
-       "rounds": 1,
-       "type": "load"
-    },
-    {  "id": "intelisa-load",
-       "file": "pdfs/intelisa.pdf",
-       "link": true,
-       "rounds": 1,
-       "type": "load"
-    },
-    {  "id": "pdfspec-load",
-       "file": "pdfs/pdf.pdf",
+    {  "id": "ecma262-pdf",
+       "file": "pdfs/ecma262.pdf",
        "link": true,
        "rounds": 1,
        "type": "load"
@@ -83,12 +62,6 @@
     },
     {  "id": "rotation",
        "file": "pdfs/rotation.pdf",
-       "rounds": 1,
-       "type": "load"
-    },
-    {  "id": "ecma262-pdf",
-       "file": "pdfs/ecma262.pdf",
-       "link": true,
        "rounds": 1,
        "type": "load"
     },

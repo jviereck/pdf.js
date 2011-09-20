@@ -4305,6 +4305,7 @@ var PartialEvaluator = (function() {
             // eagerly compile XForm objects
             var name = args[0].name;
             var xobj = xobjs.get(name);
+            var xobjNum = xobj.num;
             if (xobj) {
               xobj = xref.fetchIfRef(xobj);
               assertWellFormed(IsStream(xobj), 'XObject should be a stream');
@@ -4314,6 +4315,8 @@ var PartialEvaluator = (function() {
                 IsName(type),
                 'XObject should have a Name subtype'
               );
+
+              console.log("Do", type.name, xobjNum);
 
               if ('Form' == type.name) {
                 var matrix = xobj.dict.get('Matrix');
