@@ -5202,7 +5202,7 @@ var CanvasGraphics = (function() {
 
       var font = current.font;
       if (font) {
-        ctx.transform.apply(ctx, font.textMatrix || IDENTITY_MATRIX);
+        // ctx.transform.apply(ctx, font.textMatrix || IDENTITY_MATRIX);
         text = font.charsToUnicode(text);
       }
 

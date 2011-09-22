@@ -90,6 +90,8 @@ function SvgGraphics(holder) {
     holder.appendChild(svg);
   }
 
+  this.svg = svg;
+
   this.$private = {
     id: '',
     width: 100,
@@ -110,12 +112,6 @@ function SvgGraphics(holder) {
   var def = this.def = document.createElementNS('http://www.w3.org/2000/svg',
                                                 'def');
   svg.appendChild(def);
-
-  // Add one main <g> element for the scaling.
-  var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  g.setAttribute('transform', 'scale(' + 1.5 + ',' + 1.5 + ')');
-  svg.appendChild(g)
-  this.state.node = g;
 }
 
 var kExecutionTime = 50;
@@ -173,7 +169,17 @@ SvgGraphics.prototype = {
     } while (true);
   },
   beginDrawing: function(mediaBox) {
+    var scale = 1.5;
+    var svg = this.svg;
+    
     this.height = mediaBox.height;
+
+    // Add one main <g> element for the scaling.
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('transform', 'matrix(' + scale + ', 0, 0, ' + scale + ', 0, ' + this.height * scale + ')');
+    svg.appendChild(g)
+    this.state.node = g;
+    
     console.log(mediaBox);
   },
   endDrawing: function() {
@@ -185,6 +191,7 @@ SvgGraphics.prototype = {
     var state = this.state;
     state.x = x;
     state.y = y;
+    console.log("setCurrentPoint", x, y);
   },
 
   moveTo: function(x, y) {
@@ -277,7 +284,9 @@ SvgGraphics.prototype = {
     // just go the easy way.
     var state = this.state;
     this.appendGNode('transform', 'matrix(' + a + ',' + b + ',' + c + ',' +
-                                              d + ',' + e + ',' + f + ')');
+                                              d + ',' + e + ',' + -f + ')');
+                                              
+    console.log("transform", a, b, c, d, e, f);
   },
   
   transformM: function(m) {
@@ -376,6 +385,7 @@ SvgGraphics.prototype = {
   },
 
   moveText: function(x, y) {
+    console.log("moveText", x, y);
     var state = this.state;
     state.x = state.lineX += x;
     state.y = state.lineY += y;
@@ -390,6 +400,7 @@ SvgGraphics.prototype = {
   },
 
   showSpacedText: function(arr) {
+    console.log("showSpacedText", arr);
     // If the current font isn't supported, we can't display the text and
     // bail out.
     var state = this.state;
@@ -430,7 +441,7 @@ SvgGraphics.prototype = {
     var p = state.transPoint(state.x, state.y);
    
     var svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    svgText.setAttribute('y', this.height-p[1] + 'px');
+    svgText.setAttribute('y', -state.y + 'px');
     svgText.setAttribute('fill', 'black');
 
     var xStart = 0;//state.x;
@@ -487,10 +498,11 @@ SvgGraphics.prototype = {
       if (state.textMatrix !== IDENTITY_MATRIX) {
         this.transformM(state.textMatrix);
       }
-      if (font.textMatrix) {
-        this.transformM(font.textMatrix);
-      }
-      state.append(svgText);
+      // if (font.textMatrix) {
+      //   this.transformM(font.textMatrix);
+      // }
+      // Don't use local `state` here as this.save() created a new state obj!
+      this.state.append(svgText);
       this.restore();
     } else {
       state.append(svgText);
@@ -500,6 +512,12 @@ SvgGraphics.prototype = {
   },
     
   // Color
+  setStrokeGray: function(gray) {
+    this.setStrokeRGBColor(gray, gray, gray);
+  },
+  setFillGray: function(gray) {
+    this.setFillRGBColor(gray, gray, gray);
+  },  
   setStrokeColorSpace: function(raw) {
     this.state.strokeColorSpace =
           ColorSpace.fromIR(raw);
@@ -533,6 +551,10 @@ SvgGraphics.prototype = {
   setFillCMYKColor: function(c, m, y, k) {
     var color = Util.makeCssCmyk(c, m, y, k);
     this.state.fill = color;
+  },
+
+  setGState: function() {
+    
   },
 
   setRenderingIntent: function(intent) {

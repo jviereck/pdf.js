@@ -25,7 +25,7 @@ var page;
 var ir;
 
 var useCanvas = document.location.hash;
-binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
+binaryGet('Skript.pdf', function(data){
   var pdf = new WorkerPDFDoc(data);
   var page = pdf.getPage(1);
   var scale = 1.5;
@@ -78,6 +78,17 @@ binaryGet('../test/pdfs/tracemonkey.pdf', function(data){
         console.log("Rendering svg", Date.now() - startTime);
       }, 10);
 
+        ir = page.page.IRQueue;
+        var argsArray = ir.argsArray;
+        var fnArray = ir.fnArray;
+
+
+        var objs = {};
+        for (var i = 0; i < fnArray.length; i++) {
+          objs[fnArray[i]] = true;
+          console.log(fnArray[i], argsArray[i].join(", "));
+        }
+        console.log(Object.keys(objs));
       
     });
   }
