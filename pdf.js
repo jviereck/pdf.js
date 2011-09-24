@@ -4316,8 +4316,6 @@ var PartialEvaluator = (function() {
                 'XObject should have a Name subtype'
               );
 
-              console.log("Do", type.name, xobjNum);
-
               if ('Form' == type.name) {
                 var matrix = xobj.dict.get('Matrix');
                 var bbox = xobj.dict.get('BBox');
