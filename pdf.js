@@ -3565,11 +3565,36 @@ var Page = (function pagePage() {
         return;
       }
 
-      var gfx = new CanvasGraphics(canvasCtx);
-      var fonts = [];
-      var images = new ImagesLoader();
+      // TODO: By setting the function arguments as a property on the object,
+      // there can only one canvas get rendered at the same time.
+      this.canvasCtx = canvasCtx;
+      this.continuation = continuation;
 
-      this.compile(gfx, fonts, images);
+      // If there is a worker, tell the worker to process this page. The
+      // response is handled by the PDFDoc this page is created from. The
+      // PDFDoc then calls Page.postCompile.
+      if (this.worker) {
+        this.worker.postMessage({
+          task: 'page',
+          data: this.pageNumber
+        });
+      } else {
+        this.compile(this.postCompile.bind(this));  
+      }
+    },
+
+    postCompile: function(fonts, images) {
+      var self = this;
+      var stats = self.stats;
+      var gfx = new CanvasGraphics(this.canvasCtx);
+      var imagesLoader = new ImagesLoader();
+      var continuation = this.continuation;
+
+      // Create the images and bind them to the imagesLoader.
+      for (var i = 0; i < images.length; i++) {
+        imagesLoader.bind(images[i]);
+      }
+
       stats.compile = Date.now();
 
       var displayContinuation = function pageDisplayContinuation() {
@@ -3591,7 +3616,7 @@ var Page = (function pagePage() {
         fonts,
         function pageFontObjs() {
           stats.fonts = Date.now();
-          images.notifyOnLoad(function pageNotifyOnLoad() {
+          imagesLoader.notifyOnLoad(function pageNotifyOnLoad() {
             stats.images = Date.now();
             displayContinuation();
           });
@@ -3601,12 +3626,15 @@ var Page = (function pagePage() {
         fonts[i].dict.fontObj = fontObjs[i];
     },
 
-
-    compile: function pageCompile(gfx, fonts, images) {
+    compile: function pageCompile(callback) {
       if (this.code) {
         // content was compiled
+        callback(this.fonts, this.images);
         return;
       }
+
+      var fonts = this.fonts = [];
+      var images = this.images = [];
 
       var xref = this.xref;
       var content = xref.fetchIfRef(this.content);
@@ -3618,8 +3646,13 @@ var Page = (function pagePage() {
           content[i] = xref.fetchIfRef(content[i]);
         content = new StreamsSequenceStream(content);
       }
-      this.code = gfx.compile(content, xref, resources, fonts, images);
+
+      var pe = new PartialEvaluator();
+      this.code = pe.evaluate(content, xref, resources, fonts, images);
+    
+      callback(fonts, images);
     },
+
     display: function pageDisplay(gfx) {
       assert(this.code instanceof Function,
              'page content must be compiled first');
@@ -3856,8 +3889,21 @@ var Catalog = (function catalogCatalog() {
   return constructor;
 })();
 
+// `FEATURE_ENABLE_WORKER` determs if the worker can be used in this browser.
+var FEATURE_ENABLE_WORKER = false;
+
 var PDFDoc = (function pdfDoc() {
-  function constructor(arg, callback) {
+  function constructor(arg, callback, dontUseWorker) {
+    this.pages = {};
+
+    if (FEATURE_ENABLE_WORKER) {
+      if (dontUseWorker === undefined) {
+        this.useWorker = true;
+      } else {
+        this.useWorker = !dontUseWorker;  
+      }
+    }
+
     // Stream argument
     if (typeof arg.isStream !== 'undefined') {
       init.call(this, arg);
@@ -3875,6 +3921,77 @@ var PDFDoc = (function pdfDoc() {
     assertWellFormed(stream.length > 0, 'stream must have data');
     this.stream = stream;
     this.setup();
+
+    if (this.useWorker) {
+      this.worker = new Worker('pdf_worker_loader.js');
+      this.worker.postMessage({
+        task: 'pdf',
+        data: this.stream.bytes
+      });
+
+      this.worker.onmessage = function(event) {
+        var task = event.task;
+        var data = event.data;
+
+        switch (task) {
+          case 'console_log':
+            console.log.apply(console, data);
+            break;
+          case 'console_error':
+            console.error.apply(console, data);
+            break;
+          case 'page':
+            var pageNumber = data.pageNumber;
+            var fonts = data.fonts;
+            var images = data.images;
+            var code = data.code;
+
+            var page = this.pages[pageNumber];
+            page.code = code;
+
+            // Sending data using postMessage removes the object shape and just
+            // leaves the data of objects left. This requires to rebuild some of
+            // the structure for fonts and images.
+
+            // Rebuild the font structure.
+            for (var i = 0; i < fonts.length; i++) {
+              var font = fonts[i];
+
+              var name = font[0];
+              var file = font[1];
+              var properties = font[2];
+
+              if (file) {
+                var fontFileDict = new Dict();
+                fontFileDict.map = file.dict.map;
+
+                var fontFile = new Stream(file.bytes, file.start,
+                                          file.end - file.start, fontFileDict);
+
+                // Check if this is a FlateStream. Otherwise just use the created
+                // Stream one. This makes complex_ttf_font.pdf work.
+                var cmf = file.bytes[0];
+                if ((cmf & 0x0f) == 0x08) {
+                  file = new FlateStream(fontFile);
+                } else {
+                  file = fontFile;
+                }
+              }
+
+              fonts[i] = {
+                name: name,
+                file: file,
+                properties: properties
+              };
+            }
+            
+            // Tell the page that the page code, fonts and images are loaded and
+            // rendering the page can continue.
+            page.postCompile(fonts, images);
+            break;     
+        }
+      }.bind(this);
+    }
   }
 
   function find(stream, needle, limit, backwards) {
@@ -3973,7 +4090,10 @@ var PDFDoc = (function pdfDoc() {
       return shadow(this, 'numPages', num);
     },
     getPage: function pdfDocGetPage(n) {
-      return this.catalog.getPage(n);
+      var page = this.catalog.getPage(n);
+      page.worker = this.worker;
+      this.pages[n] = page;
+      return page;
     }
   };
 
@@ -4439,11 +4559,11 @@ var PartialEvaluator = (function partialEvaluator() {
                                              images);
               }
               if (isStream(xobj) && xobj.getImage) {
-                images.bind(xobj); // monitoring image load
+                images.push(xobj); // monitoring image load
 
                 var smask = xref.fetchIfRef(xobj.dict.get('SMask'));
                 if (isStream(smask) && smask.getImage)
-                  images.bind(smask); // monitoring image load
+                  images.push(smask); // monitoring image load
               }
             }
           } else if (cmd == 'Tf') { // eagerly collect all fonts
@@ -4998,12 +5118,6 @@ var CanvasGraphics = (function canvasGraphics() {
           break;
       }
       this.ctx.scale(cw / mediaBox.width, ch / mediaBox.height);
-    },
-
-    compile: function canvasGraphicsCompile(stream, xref, resources, fonts,
-                                            images) {
-      var pe = new PartialEvaluator();
-      return pe.evaluate(stream, xref, resources, fonts, images);
     },
 
     execute: function canvasGraphicsExecute(code, xref, resources) {
