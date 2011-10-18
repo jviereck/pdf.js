@@ -3,21 +3,18 @@
 
 'use strict';
 
-importScripts('console.js');
-importScripts('message_handler.js');
 importScripts('../pdf.js');
 importScripts('../fonts.js');
 importScripts('../crypto.js');
 importScripts('../glyphlist.js');
 importScripts('../metrics.js');
-importScripts('processor_handler.js');
 
 // Listen for messages from the main thread.
 var pdfDoc = null;
 
 this.onmessage = function(event) {
-  var task = event.task;
-  var data = event.data;
+  var task = event.data.task;
+  var data = event.data.data;
 
 	switch (task) {
 		case 'pdf':
@@ -26,12 +23,21 @@ this.onmessage = function(event) {
 
 		case 'page':
       var self = this;
-			var pageNumber = parseInt(data);
+			var pageNumber = parseInt(data) + 1;
+
+      console.log('--- worker get page ---', pageNumber);
 
 			var page = pdfDoc.getPage(pageNumber);
 			page.compile(function(fonts, images) {
+        var code = page.code;
+
+        for (var i = 0; i < code.length; i++) {
+          console.log(code.fnArray[i], code.argsArray[i]);
+        }
+
         self.postMessage({
           task: 'page',
+          pageNumber: pageNumber,
           code: page.code,
           images: images,
           fonts: fonts

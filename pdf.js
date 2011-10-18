@@ -2351,6 +2351,8 @@ var Ref = (function refRef() {
   function constructor(num, gen) {
     this.num = num;
     this.gen = gen;
+    // `refName` is a unique identifier string.
+    this.refName = num + '-' + gen;
   }
 
   constructor.prototype = {
@@ -3586,7 +3588,7 @@ var Page = (function pagePage() {
     postCompile: function(fonts, images) {
       var self = this;
       var stats = self.stats;
-      var gfx = new CanvasGraphics(this.canvasCtx);
+      var gfx = new CanvasGraphics(this.canvasCtx, this.objects);
       var imagesLoader = new ImagesLoader();
       var continuation = this.continuation;
 
@@ -3602,12 +3604,12 @@ var Page = (function pagePage() {
         // Firefox error reporting from XHR callbacks.
         setTimeout(function pageSetTimeout() {
           var exc = null;
-          try {
+          // try {
             self.display(gfx);
             stats.render = Date.now();
-          } catch (e) {
-            exc = e.toString();
-          }
+          // } catch (e) {
+          //   exc = e.toString();
+          // }
           if (continuation) continuation(exc);
         });
       };
@@ -3623,7 +3625,7 @@ var Page = (function pagePage() {
         });
 
       for (var i = 0, ii = fonts.length; i < ii; ++i)
-        fonts[i].dict.fontObj = fontObjs[i];
+        fonts[i].fontObj = fontObjs[i];
     },
 
     compile: function pageCompile(callback) {
@@ -3647,9 +3649,16 @@ var Page = (function pagePage() {
         content = new StreamsSequenceStream(content);
       }
 
+      var objects = this.objects;
       var pe = new PartialEvaluator();
-      this.code = pe.evaluate(content, xref, resources, fonts, images);
+      this.code = pe.evaluate(content, xref, resources, objects, fonts, images);
     
+      // Map the font object references in `fonts` to the corresponding objects
+      // in `objects`.
+      for (var i = 0; i < fonts.length; i++) {
+        fonts[i] = objects[fonts[i]];
+      }
+
       callback(fonts, images);
     },
 
@@ -3890,11 +3899,15 @@ var Catalog = (function catalogCatalog() {
 })();
 
 // `FEATURE_ENABLE_WORKER` determs if the worker can be used in this browser.
-var FEATURE_ENABLE_WORKER = false;
+var FEATURE_ENABLE_WORKER = true;
 
 var PDFDoc = (function pdfDoc() {
   function constructor(arg, callback, dontUseWorker) {
     this.pages = {};
+    // Holds all objects that are processed and are required to render pages.
+    // New items are added by `Page.compile`. This property is added on each
+    // page such that they can interact with it.
+    this.objects = {};
 
     if (FEATURE_ENABLE_WORKER) {
       if (dontUseWorker === undefined) {
@@ -3922,23 +3935,25 @@ var PDFDoc = (function pdfDoc() {
     this.stream = stream;
     this.setup();
 
-    if (this.useWorker) {
-      this.worker = new Worker('pdf_worker_loader.js');
+    if (!this.useWorker) {
+      this.worker = null;
+    } else {
+      this.worker = new Worker('../pdf_worker_loader.js');
       this.worker.postMessage({
         task: 'pdf',
         data: this.stream.bytes
       });
 
       this.worker.onmessage = function(event) {
-        var task = event.task;
+        var task = event.data.task;
         var data = event.data;
 
         switch (task) {
           case 'console_log':
-            console.log.apply(console, data);
+            console.log.apply(console, data.data);
             break;
           case 'console_error':
-            console.error.apply(console, data);
+            console.error.apply(console, data.data);
             break;
           case 'page':
             var pageNumber = data.pageNumber;
@@ -4091,8 +4106,15 @@ var PDFDoc = (function pdfDoc() {
     },
     getPage: function pdfDocGetPage(n) {
       var page = this.catalog.getPage(n);
-      page.worker = this.worker;
       this.pages[n] = page;
+
+      // Add some properties on the new page object, such that it can
+      // iteract with them.
+      console.log(this.worker + '');
+      console.log(page + '');
+      page.worker = this.worker;
+      page.objects = this.objects;
+
       return page;
     }
   };
@@ -4494,8 +4516,8 @@ var PartialEvaluator = (function partialEvaluator() {
   };
 
   constructor.prototype = {
-    evaluate: function partialEvaluatorEvaluate(stream, xref, resources, fonts,
-                                                images) {
+    evaluate: function partialEvaluatorEvaluate(stream, xref, resources, 
+                                        objects, fonts, images) {
       resources = xref.fetchIfRef(resources) || new Dict();
       var xobjs = xref.fetchIfRef(resources.get('XObject')) || new Dict();
       var patterns = xref.fetchIfRef(resources.get('Pattern')) || new Dict();
@@ -4535,7 +4557,7 @@ var PartialEvaluator = (function partialEvaluator() {
                 if (typeNum == 1) {
                   patternName.code = this.evaluate(pattern, xref,
                                                    dict.get('Resources'),
-                                                   fonts, images);
+                                                   objects, fonts, images);
                 }
               }
             }
@@ -4555,8 +4577,8 @@ var PartialEvaluator = (function partialEvaluator() {
 
               if ('Form' == type.name) {
                 args[0].code = this.evaluate(xobj, xref,
-                                             xobj.dict.get('Resources'), fonts,
-                                             images);
+                                             xobj.dict.get('Resources'), 
+                                             objects, fonts, images);
               }
               if (isStream(xobj) && xobj.getImage) {
                 images.push(xobj); // monitoring image load
@@ -4570,16 +4592,27 @@ var PartialEvaluator = (function partialEvaluator() {
             var fontRes = resources.get('Font');
             if (fontRes) {
               fontRes = xref.fetchIfRef(fontRes);
-              var font = xref.fetchIfRef(fontRes.get(args[0].name));
-              assertWellFormed(isDict(font));
-              if (!font.translated) {
-                font.translated = this.translateFont(font, xref, resources);
-                if (fonts && font.translated) {
+              var fontRef = fontRes.get(args[0].name);            
+              var refName = fontRes.refName;
+
+              // Check if the font was translated already. If not, translate it
+              // and store the translate on the objects hash, such that it can
+              // get looked up later.
+              if (!objects[refName]) {
+                var font = xref.fetchIfRef(fontRef);
+                var translate = this.translateFont(font, xref, resources);
+
+                if (translate) {
                   // keep track of each font we translated so the caller can
                   // load them asynchronously before calling display on a page
-                  fonts.push(font.translated);
+                  fonts.push(refName);
+                  objects[refName] = translate;
                 }
               }
+
+              // Change the value of the first argument to 'point' to the
+              // reference in the objects hash.
+              args[0] = refName;
             }
           }
 
@@ -4592,9 +4625,9 @@ var PartialEvaluator = (function partialEvaluator() {
         }
       }
 
-      return function partialEvaluatorReturn(gfx) {
-        for (var i = 0, length = argsArray.length; i < length; i++)
-          gfx[fnArray[i]].apply(gfx, argsArray[i]);
+      return {
+        fnArray: fnArray,
+        argsArray: argsArray
       };
     },
 
@@ -5084,7 +5117,7 @@ function ScratchCanvas(width, height) {
 }
 
 var CanvasGraphics = (function canvasGraphics() {
-  function constructor(canvasCtx, imageCanvas) {
+  function constructor(canvasCtx, objects, imageCanvas) {
     this.ctx = canvasCtx;
     this.current = new CanvasExtraState();
     this.stateStack = [];
@@ -5092,6 +5125,7 @@ var CanvasGraphics = (function canvasGraphics() {
     this.res = null;
     this.xobjs = null;
     this.ScratchCanvas = imageCanvas || ScratchCanvas;
+    this.objects = objects;
   }
 
   var LINE_CAP_STYLES = ['butt', 'round', 'square'];
@@ -5127,7 +5161,11 @@ var CanvasGraphics = (function canvasGraphics() {
       this.res = resources || new Dict();
       this.xobjs = xref.fetchIfRef(this.res.get('XObject')) || new Dict();
 
-      code(this);
+      var fnArray = code.fnArray;
+      var argsArray = code.argsArray;
+      for (var i = 0, length = argsArray.length; i < length; i++) {
+        gfx[fnArray[i]].apply(gfx, argsArray[i]);
+      }
 
       this.xobjs = savedXobjs;
       this.res = savedRes;
@@ -5387,18 +5425,7 @@ var CanvasGraphics = (function canvasGraphics() {
       this.current.leading = -leading;
     },
     setFont: function canvasGraphicsSetFont(fontRef, size) {
-      var font;
-      // the tf command uses a name, but graphics state uses a reference
-      if (isName(fontRef)) {
-        font = this.xref.fetchIfRef(this.res.get('Font'));
-        if (!isDict(font))
-         return;
-
-        font = font.get(fontRef.name);
-      } else if (isRef(fontRef)) {
-        font = fontRef;
-      }
-      font = this.xref.fetchIfRef(font);
+      var font = this.objects[fontRef];
       if (!font)
         error('Referenced font is not found');
 
@@ -6474,7 +6501,7 @@ var TilingPattern = (function tilingPattern() {
 
       // set the new canvas element context as the graphics context
       var tmpCtx = tmpCanvas.getContext('2d');
-      var graphics = new CanvasGraphics(tmpCtx);
+      var graphics = new CanvasGraphics(tmpCtx, this.objects);
 
       var paintType = dict.get('PaintType');
       switch (paintType) {
