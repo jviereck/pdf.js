@@ -3,6 +3,111 @@
 
 'use strict';
 
+var feedback = (function() {
+  var listenForSelection = false;
+  var selection = null;
+  var showing = false;
+
+  return {
+    show: function() {
+      showing = true;
+
+      var window = this.window;
+      var overlay = this.overlay;
+      overlay.style.display = "block";
+      window.style.display = "block";
+
+      var canvas = document.createElement("canvas");
+      var width = selection.toX - selection.fromX;
+      var height = selection.toY - selection.fromY;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      var ctx = canvas.getContext('2d');
+      var selCtx = selection.canvas.getContext('2d');
+
+      var imgData = selCtx.getImageData(
+                              selection.fromX,
+                              selection.fromY,
+                              width,
+                              height
+                            );
+      ctx.putImageData(imgData, 0, 0);
+
+      var dataURL = canvas.toDataURL('image/png');
+      var img = document.getElementById("feedback-img");
+      img.src = "data:image/png;" + dataURL;
+    },
+
+    close: function() {
+      showing = false;
+
+      this.overlay.style.display = "none";
+      this.window.style.display = "none";
+    },
+
+    setup: function() {
+      this.overlay = document.getElementById("feedback-overlay");
+      this.window = document.getElementById("feedback-window");
+      var closeBtn = document.getElementById("feedback-close");
+      closeBtn.addEventListener('click', this.close.bind(this));
+
+      // Close the feedback window on pressing ESCAPE.
+      window.addEventListener('keydown', function(evt) {
+        var VK_ESC = 27;
+        if (showing && evt.keyCode == VK_ESC) {
+          this.close();
+        }
+      }.bind(this));
+
+      window.addEventListener('mousedown', function(evt) {
+        if (!listenForSelection) return;
+        var outerHTML = evt.target.outerHTML;
+        if (outerHTML.indexOf('<canvas id="page') == 0) {
+          listenForSelection = false;
+          selection = {
+            canvas: evt.target,
+            fromX: evt.clientX,
+            fromY: evt.clientY
+          };
+        }
+      }, true);
+
+      window.addEventListener('mouseup', function(evt) {
+        if (!selection) return;
+
+        var outerHTML = evt.target.outerHTML;
+        if (outerHTML.indexOf('<canvas id="page') == 0) {
+          selection.toX = evt.clientX;
+          selection.toY = evt.clientY;
+
+          var t;
+          if (selection.fromX > selection.toX) {
+            t = selection.fromX;
+            selection.from = selection.toX;
+            selection.toX = t;
+          }
+          if (selection.fromY > selection.toY) {
+            t = selection.fromY;
+            selection.from = selection.toY;
+            selection.toY = t;
+          }
+
+          this.show();
+          selection = null;
+        }
+      }.bind(this), true);
+
+      var feedback = document.getElementById('feedback');
+      feedback.addEventListener('click', function(evt) {
+        alert('Please select the area that is broken.\nInclude some region around the broken area. If there are multiple broken areas, please select them one by one by reclicking the "Broken?" button.');
+        listenForSelection = true;
+      });
+    }
+  }
+})();
+
 var kDefaultURL = 'compressed.tracemonkey-pldi-09.pdf';
 var kDefaultScale = 1.5;
 var kDefaultScaleDelta = 1.1;
@@ -603,6 +708,8 @@ window.addEventListener('load', function webViewerLoad(evt) {
     document.getElementById('fileInput').setAttribute('hidden', 'true');
   else
     document.getElementById('fileInput').value = null;
+
+  feedback.setup();
 }, true);
 
 window.addEventListener('unload', function webViewerUnload(evt) {
