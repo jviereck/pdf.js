@@ -288,3 +288,39 @@ canvas {
 	margin: 100px 0;
 	text-align: center;
 }
+
+#feedback-overlay {
+  display:none;
+  z-index:99;
+  position:fixed;
+  top:0px;
+  left:0px;
+  height:9999px;
+  width:9999px;
+  background:rgba(0,0,0,0.2);
+}
+
+#feedback-window {
+  display:none;
+  z-index:100;
+  position:fixed;
+  top:100px;
+  width: 900px;
+  left: 50%;
+  margin-left:-450px;
+  border: 1px solid black;
+  background:white
+}
+
+#feedback-head {
+  background: black;
+  color:white;
+  font-size:25px;
+  padding:10px;
+}
+
+#feedback-msg {
+  float:left;
+  width:380px;
+  padding:10px;
+}

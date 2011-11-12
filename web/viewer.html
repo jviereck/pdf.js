@@ -123,11 +123,11 @@
 
     <div id="loading">Loading... 0%</div>
     <div id="viewer"></div>
-    <div id="feedback-overlay"  style="display:none;z-index:99;position:fixed;top:0px;left:0px;height:9999px;width:9999px;background:rgba(0,0,0,0.2);">
+    <div id="feedback-overlay">
     </div>
-    <div id="feedback-window"  style="display:none;z-index:100;position:fixed; top:100px; width: 900px;left: 50%;margin-left:-450px;border: 1px solid black;background:white">
-      <div style="background: black;color:white;font-size:25px;padding:10px">Submit brokeness</div>
-      <div style="float:left;width:380px;padding:10px">
+    <div id="feedback-window">
+      <div id="feedback-head">Submit brokenness</div>
+      <div id="feedback-msg">
         <p>
           Sorry that something is broken in PDF.JS!
         </p>
@@ -140,8 +140,8 @@
         <p>
           If you want to update the selected broken area, just close this window and click on the "Broken?"-button again.
         </p>
-        <p>
-          <strong>Thanks a lot for your time reporting this - the PDF.JS team.</strong>
+        <p style="text-align:right">
+          <strong>Thanks a lot for your time reporting this <br> - your PDF.JS team.</strong>
         </p>
       </div>
       <div style="float:right">
@@ -152,7 +152,8 @@
           </tr>
           <tr>
             <td>
-              Broken location:
+              Broken location:<br>
+              <italic>(read only)</italic>
             </td>
             <td>
               <textarea style="width:300px;height:30px" readonly="true">http://www.cds.caltech.edu/~marsden/wiki/uploads/cds140a-09/lecturenotes/analytic_v_smooth.pdf, page 2</textarea>

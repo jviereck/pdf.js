@@ -8,9 +8,26 @@ var feedback = (function() {
   var selection = null;
   var showing = false;
 
+  function clickedCanvas(evt) {
+    return evt.target.tagName == 'CANVAS' && evt.target.id.indexOf('page') == 0;
+  }
+
   return {
     show: function() {
       showing = true;
+
+      // Normalize from-to.
+      var t;
+      if (selection.fromX > selection.toX) {
+        t = selection.fromX;
+        selection.from = selection.toX;
+        selection.toX = t;
+      }
+      if (selection.fromY > selection.toY) {
+        t = selection.fromY;
+        selection.from = selection.toY;
+        selection.toY = t;
+      }
 
       var window = this.window;
       var overlay = this.overlay;
@@ -62,41 +79,26 @@ var feedback = (function() {
       }.bind(this));
 
       window.addEventListener('mousedown', function(evt) {
-        if (!listenForSelection) return;
-        var outerHTML = evt.target.outerHTML;
-        if (outerHTML.indexOf('<canvas id="page') == 0) {
-          listenForSelection = false;
-          selection = {
-            canvas: evt.target,
-            fromX: evt.clientX,
-            fromY: evt.clientY
-          };
-        }
+        if (!listenForSelection || !clickedCanvas(evt)) return;
+
+        listenForSelection = false;
+        selection = {
+          canvas: evt.target,
+          fromX: evt.clientX,
+          fromY: evt.clientY
+        };
       }, true);
 
       window.addEventListener('mouseup', function(evt) {
         if (!selection) return;
 
-        var outerHTML = evt.target.outerHTML;
-        if (outerHTML.indexOf('<canvas id="page') == 0) {
+        if (clickedCanvas(evt)) {
           selection.toX = evt.clientX;
           selection.toY = evt.clientY;
 
-          var t;
-          if (selection.fromX > selection.toX) {
-            t = selection.fromX;
-            selection.from = selection.toX;
-            selection.toX = t;
-          }
-          if (selection.fromY > selection.toY) {
-            t = selection.fromY;
-            selection.from = selection.toY;
-            selection.toY = t;
-          }
-
           this.show();
-          selection = null;
         }
+        selection = null;
       }.bind(this), true);
 
       var feedback = document.getElementById('feedback');
