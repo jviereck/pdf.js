@@ -321,6 +321,14 @@ canvas {
 
 #feedback-msg {
   float:left;
-  width:380px;
+  width:450px;
   padding:10px;
+  font-size: 14px;
+}
+
+#feedback-form {
+  float:right;
+  width:410px;
+  padding:5px;
+  font-size: 14px;
 }

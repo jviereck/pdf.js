@@ -126,16 +126,22 @@
     <div id="feedback-overlay">
     </div>
     <div id="feedback-window">
-      <div id="feedback-head">Submit brokenness</div>
+      <div id="feedback-head">Report a problem with PDF.js</div>
       <div id="feedback-msg">
         <p>
           Sorry that something is broken in PDF.JS!
         </p>
         <p>
-          By providing us some information, we can try to fix this.
           You've already selected the broken area. Now please select one of the brokeness types. A small
-          description about what's broken is helpful! Please also enter your name and email address. Once you
-          submit the form, you will get a mail. Once you confirmed the mail, we take a look at this bug.
+          description about what's broken is helpful! Please also enter your email address. Once you
+          submit the form, you will get a email to confirm. Once you confirmed the email, we take a look at this bug.
+        </p>
+        <p>
+          By providing us some information, we can try to fix this. Your
+          reporting this bug to Mozilla on behalf of the PDF.JS team.
+          <strong>
+            Your email address is not saved, only used during a validation process.
+          </strong>
         </p>
         <p>
           If you want to update the selected broken area, just close this window and click on the "Broken?"-button again.
@@ -144,11 +150,38 @@
           <strong>Thanks a lot for your time reporting this <br> - your PDF.JS team.</strong>
         </p>
       </div>
-      <div style="float:right">
+      <div id="feedback-form">
         <table style="width:100%">
           <tr>
+            <td width="150px">What's broken?</td>
+            <td>
+              <select id="feedback-broken-type" oncontextmenu="return false;">
+                <option>Character - wrong spacing</option>
+                <option>Character - wrong character</option>
+                <option>Character - wrong siz</option>
+                <option>Character - missalignment</option>
+                <option>Image missrendered</option>
+                <option>Some colors wrong</option>
+                <option>Page doesn't render at all</option>
+                <option>Something else</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Description:</td>
+            <td><textarea style="width:240px;height:30px"></textarea></td>
+          </tr>
+          <tr>
+            <td>Screenshot:</td>
+            <td><input type="checkbox"> Include screenshot of the broken page.</td>
+          </tr>
+          <tr>
+            <td>Your email:</td>
+            <td><input style="width:240px;"></td>
+          </tr>
+          <tr>
             <td>Broken area:</td>
-            <td><img id="feedback-img" style="max-height:200px;max-width:300px;border:1px solid red"></img></td>
+            <td><img id="feedback-img" style="max-height:200px;max-width:240px;border:1px solid red"></img></td>
           </tr>
           <tr>
             <td>
@@ -156,36 +189,15 @@
               <italic>(read only)</italic>
             </td>
             <td>
-              <textarea style="width:300px;height:30px" readonly="true">http://www.cds.caltech.edu/~marsden/wiki/uploads/cds140a-09/lecturenotes/analytic_v_smooth.pdf, page 2</textarea>
+              <textarea style="width:240px;height:50px" readonly="true">http://www.cds.caltech.edu/~marsden/wiki/uploads/cds140a-09/lecturenotes/analytic_v_smooth.pdf, page 2</textarea>
             </td>
-          </tr>
-          <tr>
-            <td width="150px">What's broken?</td>
-            <td>
-              <select id="feedback-broken-type" oncontextmenu="return false;">
-                <option>Font - Spacing</option>
-                <option>Font - Wrong character</option>
-                <option>Font - Size</option>
-                <option>Font - Missalignment</option>
-                <option>Something else</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Description:</td>
-            <td><textarea style="width:300px;height:30px"></textarea></td>
-          </tr>
-          <tr>
-            <td>Your name:</td>
-            <td><input style="width:300px"></td>
-          </tr>
-          <tr>
-            <td>Your email:</td>
-            <td><input style="width:300px"></td>
           </tr>
           <tr>
             <td></td>
-            <td><button>Submit</button> <button id="feedback-close">Close</button></td>
+            <td>
+              <div style="float:right">
+                <button id="feedback-close">Cancle</button><button>About my data</button><button>Submit</button></td>
+              </div>
           </tr>
         </table>
       </div>

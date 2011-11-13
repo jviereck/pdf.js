@@ -103,7 +103,7 @@ var feedback = (function() {
 
       var feedback = document.getElementById('feedback');
       feedback.addEventListener('click', function(evt) {
-        alert('Please select the area that is broken.\nInclude some region around the broken area. If there are multiple broken areas, please select them one by one by reclicking the "Broken?" button.');
+        alert('Please select the area that is broken.');
         listenForSelection = true;
       });
     }
