@@ -5,11 +5,16 @@
 
 var feedback = (function() {
   var listenForSelection = false;
-  var selection = null;
+  var sel = null;
   var showing = false;
 
   function clickedCanvas(evt) {
     return evt.target.tagName == 'CANVAS' && evt.target.id.indexOf('page') == 0;
+  }
+
+  function trimNumber(num) {
+    num = num + "";
+    return num.substring(1, 5) || '.0';
   }
 
   return {
@@ -18,15 +23,15 @@ var feedback = (function() {
 
       // Normalize from-to.
       var t;
-      if (selection.fromX > selection.toX) {
-        t = selection.fromX;
-        selection.from = selection.toX;
-        selection.toX = t;
+      if (sel.fromX > sel.toX) {
+        t = sel.fromX;
+        sel.from = sel.toX;
+        sel.toX = t;
       }
-      if (selection.fromY > selection.toY) {
-        t = selection.fromY;
-        selection.from = selection.toY;
-        selection.toY = t;
+      if (sel.fromY > sel.toY) {
+        t = sel.fromY;
+        sel.from = sel.toY;
+        sel.toY = t;
       }
 
       var window = this.window;
@@ -34,19 +39,20 @@ var feedback = (function() {
       overlay.style.display = "block";
       window.style.display = "block";
 
+      var selCanvas = sel.canvas;
       var canvas = document.createElement("canvas");
-      var width = selection.toX - selection.fromX;
-      var height = selection.toY - selection.fromY;
+      var width = sel.toX - sel.fromX;
+      var height = sel.toY - sel.fromY;
 
       canvas.width = width;
       canvas.height = height;
 
       var ctx = canvas.getContext('2d');
-      var selCtx = selection.canvas.getContext('2d');
+      var selCtx = selCanvas.getContext('2d');
 
       var imgData = selCtx.getImageData(
-                              selection.fromX,
-                              selection.fromY,
+                              sel.fromX,
+                              sel.fromY,
                               width,
                               height
                             );
@@ -55,6 +61,15 @@ var feedback = (function() {
       var dataURL = canvas.toDataURL('image/png');
       var img = document.getElementById("feedback-img");
       img.src = "data:image/png;" + dataURL;
+
+      this.location.value = this.url + "#" +
+        sel.canvas.id.substring(4) +
+        ' [' +
+          trimNumber(sel.fromX / sel.canvas.width) + ',' +
+          trimNumber(sel.fromY / sel.canvas.height) + ',' +
+          trimNumber(sel.toX / sel.canvas.width) + ',' +
+          trimNumber(sel.toY / sel.canvas.height) +
+        ']';
     },
 
     close: function() {
@@ -64,10 +79,20 @@ var feedback = (function() {
       this.window.style.display = "none";
     },
 
+    submit: function() {
+      // Dispatching an event that the extension listens to.
+      var evt = window.document.createEvent("CustomEvent");
+      evt.initCustomEvent("pdffeedback", false, false, "foo bar");
+      window.document.dispatchEvent(evt);
+    },
+
     setup: function() {
       this.overlay = document.getElementById("feedback-overlay");
       this.window = document.getElementById("feedback-window");
+      this.location = document.getElementById('feedback-location')
       var closeBtn = document.getElementById("feedback-close");
+
+
       closeBtn.addEventListener('click', this.close.bind(this));
 
       // Close the feedback window on pressing ESCAPE.
@@ -82,7 +107,7 @@ var feedback = (function() {
         if (!listenForSelection || !clickedCanvas(evt)) return;
 
         listenForSelection = false;
-        selection = {
+        sel = {
           canvas: evt.target,
           fromX: evt.clientX,
           fromY: evt.clientY
@@ -90,15 +115,15 @@ var feedback = (function() {
       }, true);
 
       window.addEventListener('mouseup', function(evt) {
-        if (!selection) return;
+        if (!sel) return;
 
         if (clickedCanvas(evt)) {
-          selection.toX = evt.clientX;
-          selection.toY = evt.clientY;
+          sel.toX = evt.clientX;
+          sel.toY = evt.clientY;
 
           this.show();
         }
-        selection = null;
+        sel = null;
       }.bind(this), true);
 
       var feedback = document.getElementById('feedback');
@@ -226,7 +251,7 @@ var PDFView = {
   },
 
   open: function pdfViewOpen(url, scale) {
-    document.title = this.url = url;
+    document.title = this.url = feedback.url = url;
 
     var self = this;
     PDFJS.getPdf(

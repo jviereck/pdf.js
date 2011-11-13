@@ -76,7 +76,7 @@
       <div class="separator"></div>
 
       <button id="feedback">
-        Broken?
+        Report broken PDF
       </button>
 
       <button id="print" onclick="window.print();" oncontextmenu="return false;">
@@ -142,6 +142,9 @@
           <strong>
             Your email address is not saved, only used during a validation process.
           </strong>
+          <strong>
+            No kind of image data (especially not the selected area) is send to the server.
+          </strong>
         </p>
         <p>
           If you want to update the selected broken area, just close this window and click on the "Broken?"-button again.
@@ -185,7 +188,7 @@
               <italic>(read only)</italic>
             </td>
             <td>
-              <textarea style="width:240px;height:50px" readonly="true">http://www.cds.caltech.edu/~marsden/wiki/uploads/cds140a-09/lecturenotes/analytic_v_smooth.pdf, page 2</textarea>
+              <textarea id="feedback-location" style="width:240px;height:50px" readonly="true">http://www.cds.caltech.edu/~marsden/wiki/uploads/cds140a-09/lecturenotes/analytic_v_smooth.pdf, page 2</textarea>
             </td>
           </tr>
           <tr>
