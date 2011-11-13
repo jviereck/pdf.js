@@ -15,7 +15,7 @@ var binaryGet = function(url, callback){
       callback(data);
     }
   };
-  xhr.send(null);  
+  xhr.send(null);
 }
 
 //
@@ -25,7 +25,7 @@ var page;
 var ir;
 
 var useCanvas = document.location.hash;
-binaryGet('Skript.pdf', function(data){
+binaryGet('compressed.tracemonkey-pldi-09.pdf', function(data){
   var pdf = new WorkerPDFDoc(data);
   var page = pdf.getPage(1);
   var scale = 1.5;
@@ -37,14 +37,14 @@ binaryGet('Skript.pdf', function(data){
     //
     var context = canvas.getContext("2d");
     canvas.height = page.height * scale;
-    canvas.width = page.width * scale;  
+    canvas.width = page.width * scale;
 
     //
     // Render PDF page into canvas context
     //
     page.startRendering(context, function() {
       setTimeout(function() {
-        console.log("Rendering canvas", Date.now() - startTime);        
+        console.log("Rendering canvas", Date.now() - startTime);
         ir = page.page.IRQueue;
         var argsArray = ir.argsArray;
         var fnArray = ir.fnArray;
@@ -61,11 +61,11 @@ binaryGet('Skript.pdf', function(data){
 
       }, 10);
     });
-  } else {    
+  } else {
     canvas.style.display = "none";
-    
+
     window.RESOLVE_FONTS = true;
-    
+
     // Thanks Brendan for let us do this in JS!
     CanvasGraphics = SvgGraphics;
     var container = document.getElementById("container");
@@ -89,7 +89,7 @@ binaryGet('Skript.pdf', function(data){
           console.log(fnArray[i], argsArray[i].join(", "));
         }
         console.log(Object.keys(objs));
-      
+
     });
   }
 });
