@@ -89,9 +89,19 @@ var feedback = (function() {
     setup: function() {
       this.overlay = document.getElementById("feedback-overlay");
       this.window = document.getElementById("feedback-window");
-      this.location = document.getElementById('feedback-location')
+      this.location = document.getElementById('feedback-location');
+
+      var aboutDataBtn = document.getElementById('feedback-about-data');
+      var submitBtn = document.getElementById('feedback-submit');
       var closeBtn = document.getElementById("feedback-close");
 
+      submitBtn.addEventListener('click', function() {
+        alert('This will submit the data to the server.');
+      });
+
+      aboutDataBtn.addEventListener('click', function() {
+        alert('This will tell the user in more detail what\'s about to happen about the data he\'s submitting + what data is submitted in total.');
+      });
 
       closeBtn.addEventListener('click', this.close.bind(this));
 
