@@ -131,13 +131,14 @@ var PDFImage = (function pdfImage() {
 
       if (smask) {
         if (smask.image.src) {
-          // smask is a DOM image
-          var tempCanvas = new ScratchCanvas(width, height);
-          var tempCtx = tempCanvas.getContext('2d');
-          var domImage = smask.image;
-          tempCtx.drawImage(domImage, 0, 0, domImage.width, domImage.height,
-            0, 0, width, height);
-          var data = tempCtx.getImageData(0, 0, width, height).data;
+          // Smask is a DOM image. This part of the code might run inside a
+          // web worker. Therefore, there is no direct way to load the image
+          // using the browser. For now, by calling `ensureBuffer`
+          // the jpg.js library is used to build the image data in pure JS.
+          var jpegImage = smask.image;
+          jpegImage.ensureBuffer();
+
+          var data = jpegImage.buffer;
           for (var i = 0, j = 0, ii = width * height; i < ii; ++i, j += 4)
             buf[i] = data[j]; // getting first component value
           return buf;

@@ -17,7 +17,7 @@ if (!globalScope.PDFJS) {
   globalScope.PDFJS = {};
 }
 
-globalScope.PDFJS.disableWorker = true;
+globalScope.PDFJS.disableWorker = false;
 
 // getPdf()
 // Convenience function to perform binary Ajax GET

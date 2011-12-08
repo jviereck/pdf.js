@@ -802,6 +802,8 @@ var JpegStream = (function jpegStream() {
     // Flag indicating wether the image can be natively loaded.
     this.isNative = true;
 
+    this.bytes = bytes;
+
     this.colorTransform = -1;
 
     if (isAdobeImage(bytes)) {
