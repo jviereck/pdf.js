@@ -23,22 +23,27 @@ var Parser = (function parserParser() {
       this.buf1 = this.lexer.getObj();
       this.buf2 = this.lexer.getObj();
     },
-    shift: function parserShift() {
+    shift: function parserShift(foo, debug) {
+      if (debug) console.log('enter shift');
       if (isCmd(this.buf2, 'ID')) {
         this.buf1 = this.buf2;
         this.buf2 = null;
         // skip byte after ID
+        if (debug) console.log('lexer skip');
         this.lexer.skip();
       } else {
         this.buf1 = this.buf2;
-        this.buf2 = this.lexer.getObj();
+        if (debug) console.log('lexer getObj()');
+        this.buf2 = this.lexer.getObj(debug);
       }
     },
-    getObj: function parserGetObj(cipherTransform) {
+    getObj: function parserGetObj(cipherTransform, debug) {
+      if (debug) console.log('enter getObj');
       if (isCmd(this.buf1, 'BI')) { // inline image
         this.shift();
         return this.makeInlineImage(cipherTransform);
       }
+      if (debug) console.log('enter array');
       if (isCmd(this.buf1, '[')) { // array
         this.shift();
         var array = [];
@@ -49,6 +54,7 @@ var Parser = (function parserParser() {
         this.shift();
         return array;
       }
+      if (debug) console.log('enter dict');
       if (isCmd(this.buf1, '<<')) { // dictionary or stream
         this.shift();
         var dict = new Dict();
@@ -75,6 +81,7 @@ var Parser = (function parserParser() {
         this.shift();
         return dict;
       }
+      if (debug) console.log('enter reference');
       if (isInt(this.buf1)) { // indirect reference or integer
         var num = this.buf1;
         this.shift();
@@ -86,17 +93,29 @@ var Parser = (function parserParser() {
         }
         return num;
       }
+      if (debug) console.log('enter string');
       if (isString(this.buf1)) { // string
         var str = this.buf1;
+        if (debug) console.log('debug str: ' + str)
         this.shift();
-        if (cipherTransform)
+        if (debug) console.log('debug str: postShift');
+        if (cipherTransform) {
+          if (debug) console.log('debug str: cipherTransform');
           str = cipherTransform.decryptString(str);
+        }
+
+        if (debug) console.log('debug str: return ' + str);
         return str;
       }
 
+      if (debug) console.log('enter object');
       // simple object
       var obj = this.buf1;
-      this.shift();
+
+      if (debug) console.log('obj value: ' + JSON.stringify(obj));
+      this.shift(undefined, debug);
+      if (debug) console.log('obj post shift');
+
       return obj;
     },
     makeInlineImage: function parserMakeInlineImage(cipherTransform) {
@@ -465,7 +484,8 @@ var Lexer = (function lexer() {
       }
       return str;
     },
-    getObj: function lexerGetObj() {
+    getObj: function lexerGetObj(debug) {
+      if (debug) console.log('enter lexerGetObj');
       // skip whitespace and comments
       var comment = false;
       var stream = this.stream;
@@ -483,22 +503,29 @@ var Lexer = (function lexer() {
         }
       }
 
+      if (debug) console.log('post comments: ' + (ch == '6'));
+
       // start reading token
       switch (ch) {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
         case '+': case '-': case '.':
+          if (debug) console.log('enter numbers');
           return this.getNumber(ch);
         case '(':
+          if (debug) console.log('enter (');
           return this.getString();
         case '/':
+          if (debug) console.log('enter /');
           return this.getName(ch);
         // array punctuation
         case '[':
         case ']':
+          if (debug) console.log('enter []');
           return new Cmd(ch);
         // hex string or dict punctuation
         case '<':
+          if (debug) console.log('enter <');
           ch = stream.lookChar();
           if (ch == '<') {
             // dict punctuation
@@ -508,6 +535,7 @@ var Lexer = (function lexer() {
           return this.getHexString(ch);
         // dict punctuation
         case '>':
+          if (debug) console.log('enter >');
           ch = stream.lookChar();
           if (ch == '>') {
             stream.skip();
@@ -515,12 +543,16 @@ var Lexer = (function lexer() {
           }
         case '{':
         case '}':
+          if (debug) console.log('enter {}');
           return new Cmd(ch);
         // fall through
         case ')':
+          if (debug) console.log('enter )');
           error('Illegal character: ' + ch);
           return Error;
       }
+
+      if (debug) console.log('post switch');
 
       // command
       var str = ch;

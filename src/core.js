@@ -354,6 +354,7 @@ var PDFDocModel = (function pdfDoc() {
     assertWellFormed(stream.length > 0, 'stream must have data');
     this.stream = stream;
     this.setup();
+    console.log('AFTER-SETUP');
   }
 
   function find(stream, needle, limit, backwards) {
@@ -439,11 +440,19 @@ var PDFDocModel = (function pdfDoc() {
       // May not be a PDF file, continue anyway.
     },
     setup: function pdfDocSetup(ownerPassword, userPassword) {
+      console.log('setup');
       this.checkHeader();
-      this.xref = new XRef(this.stream,
-                           this.startXRef,
-                           this.mainXRefEntriesOffset);
+      console.log('checkHeader');
+      try {
+        this.xref = new XRef(this.stream,
+                             this.startXRef,
+                             this.mainXRefEntriesOffset);
+      } catch (e) {
+        console.log('xref error');
+      }
+      console.log('xref');
       this.catalog = new Catalog(this.xref);
+      console.log('catalog');
     },
     get numPages() {
       var linearization = this.linearization;
@@ -464,6 +473,8 @@ var PDFDoc = (function pdfDoc() {
     var stream = null;
     var data = null;
 
+    window._pdf = this;
+
     if (isStream(arg)) {
       stream = arg;
       data = arg.bytes;
@@ -475,6 +486,9 @@ var PDFDoc = (function pdfDoc() {
     }
 
     this.data = data;
+    console.log(stream.bytes.length);
+    console.log(calcSum(stream.bytes));
+    console.log(calculateMD5(stream.bytes, 0, stream.bytes.length));
     this.stream = stream;
     this.pdf = new PDFDocModel(stream);
 

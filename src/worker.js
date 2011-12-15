@@ -60,10 +60,28 @@ var WorkerMessageHandler = {
     handler.on('doc', function wphSetupDoc(data) {
       // Create only the model of the PDFDoc, which is enough for
       // processing the content of the pdf.
-      pdfDoc = new PDFDocModel(new Stream(data));
+
+      console.log('setPDFDocWorkerPre');
+      var s = new Stream(data);
+
+      console.log('worker-len:' + s.bytes.length);
+      console.log(calculateMD5(s.bytes, 0, s.bytes.length));
+      console.log(calcSum(s.bytes));
+
+      console.log('postStream');
+      try {
+        pdfDoc = new PDFDocModel(s);
+      } catch (e) {
+        console.log('error');
+      }
+
+      console.log('postModel');
     });
 
     handler.on('page_request', function wphSetupPageRequest(pageNum) {
+      console.log('page_request' + pageNum);
+      return;
+
       pageNum = parseInt(pageNum);
 
 

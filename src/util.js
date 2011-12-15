@@ -24,6 +24,7 @@ function backtrace() {
 }
 
 function error(msg) {
+  console.log('#Error: ' + msg);
   log('Error: ' + msg);
   log(backtrace());
   throw new Error(msg);

@@ -44,6 +44,17 @@ var ARCFourCipher = (function arcFourCipher() {
   return constructor;
 })();
 
+var calcSum = function(data) {
+  var len = data.byteLength - 1;
+  var sum = 0;
+
+  while (len--) {
+    sum += data[len];
+    sum %= 1024;
+  }
+  return sum;
+}
+
 var calculateMD5 = (function calculateMD5() {
   var r = new Uint8Array([
     7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,

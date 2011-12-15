@@ -261,7 +261,10 @@ var XRef = (function xRefXRef() {
     this.stream = stream;
     this.entries = [];
     this.xrefstms = {};
+    console.log('--- xref ---');
     var trailerDict = this.readXRef(startXRef);
+
+    console.log('trailerDict');
 
     // prepare the XRef cache
     this.cache = [];
@@ -273,34 +276,58 @@ var XRef = (function xRefXRef() {
                                                 fileId[0] /*, password */);
     }
 
+    console.log('post trailerDict');
+
     // get the root dictionary (catalog) object
     if (!isRef(this.root = trailerDict.get('Root')))
       error('Invalid root reference');
+
+    console.log('--- xref:end ---');
   }
 
   constructor.prototype = {
     readXRefTable: function readXRefTable(parser) {
+      console.log('enter readXRefTable', parser.lexer.stream.pos);
       var obj;
+      var _counter_ = 0;
       while (true) {
-        if (isCmd(obj = parser.getObj(), 'trailer'))
+        console.log(_counter_);
+        if (isCmd(obj = parser.getObj(), 'trailer')) {
+          console.log("_counter_:break");
           break;
+        }
+
+        console.log('-1');
+        _counter_ ++;
         if (!isInt(obj))
           error('Invalid XRef table');
+        console.log('-2');
         var first = obj;
         if (!isInt(obj = parser.getObj()))
           error('Invalid XRef table');
         var n = obj;
+        console.log('-3');
         if (first < 0 || n < 0 || (first + n) != ((first + n) | 0))
           error('Invalid XRef table: ' + first + ', ' + n);
+        console.log('-4');
         for (var i = first; i < first + n; ++i) {
+          var debug = (i == 179408 || i == 179413);
+          if (i > 179400 && i < 179440) {
+            console.log('-5' + i);
+          }
+          if (debug) console.log('===DEBUG===');
+
           var entry = {};
           if (!isInt(obj = parser.getObj()))
             error('Invalid XRef table: ' + first + ', ' + n);
           entry.offset = obj;
+          if (debug) console.log('-5.1' + i);
           if (!isInt(obj = parser.getObj()))
             error('Invalid XRef table: ' + first + ', ' + n);
           entry.gen = obj;
-          obj = parser.getObj();
+          if (debug) console.log('-5.2:' + i);
+          obj = parser.getObj(undefined, debug);
+          if (debug) console.log('-5.2:after:' + i);
           if (isCmd(obj, 'n')) {
             entry.uncompressed = true;
           } else if (isCmd(obj, 'f')) {
@@ -308,6 +335,7 @@ var XRef = (function xRefXRef() {
           } else {
             error('Invalid XRef table: ' + first + ', ' + n);
           }
+          if (debug) console.log('-5.3' + i);
           if (!this.entries[i]) {
             // In some buggy PDF files the xref table claims to start at 1
             // instead of 0.
@@ -320,10 +348,14 @@ var XRef = (function xRefXRef() {
         }
       }
 
+      console.log('read trailer dict');
+
       // read the trailer dictionary
       var dict;
       if (!isDict(dict = parser.getObj()))
         error('Invalid XRef table');
+
+      console.log('read prev pointer');
 
       // get the 'Prev' pointer
       var prev;
@@ -336,6 +368,8 @@ var XRef = (function xRefXRef() {
         prev = obj.num;
       }
       if (prev) {
+        console.log('prev -> readXref');
+
         this.readXRef(prev);
       }
 
@@ -344,10 +378,15 @@ var XRef = (function xRefXRef() {
         var pos = obj;
         // ignore previously loaded xref streams (possible infinite recursion)
         if (!(pos in this.xrefstms)) {
+
+          console.log('xRefStrm');
+
           this.xrefstms[pos] = 1;
           this.readXRef(pos);
         }
       }
+
+      console.log('RETURN');
 
       return dict;
     },
@@ -516,18 +555,32 @@ var XRef = (function xRefXRef() {
       return null;
     },
     readXRef: function readXref(startXRef) {
+      console.log('readXref enter');
       var stream = this.stream;
       stream.pos = startXRef;
 
       try {
+        console.log('build parser');
         var parser = new Parser(new Lexer(stream), true);
+
+        console.log('parser');
+
         var obj = parser.getObj();
 
+        console.log('getObj');
+
         // parse an old-style xref table
-        if (isCmd(obj, 'xref'))
+        if (isCmd(obj, 'xref')) {
+          console.log('xref');
+
           return this.readXRefTable(parser);
+        }
+
 
         // parse an xref stream
+
+        console.log('nxref');
+
         if (isInt(obj)) {
           if (!isInt(parser.getObj()) ||
               !isCmd(parser.getObj(), 'obj') ||
@@ -537,6 +590,7 @@ var XRef = (function xRefXRef() {
           return this.readXRefStream(obj);
         }
       } catch (e) {
+        console.log("FAIL");
         log('Reading of the xref table/stream failed: ' + e);
       }
 
