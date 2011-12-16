@@ -80,7 +80,6 @@ var WorkerMessageHandler = {
 
     handler.on('page_request', function wphSetupPageRequest(pageNum) {
       console.log('page_request' + pageNum);
-      return;
 
       pageNum = parseInt(pageNum);
 

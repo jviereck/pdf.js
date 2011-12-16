@@ -513,6 +513,9 @@ var PDFDoc = (function pdfDoc() {
       var worker;
       try {
         worker = new Worker(workerSrc);
+        // worker.onerror = function(evt) {
+        //   console.log('foo');
+        // }
       } catch (e) {
         // Some versions of FF can't create a worker on localhost, see:
         // https://bugzilla.mozilla.org/show_bug.cgi?id=683280
