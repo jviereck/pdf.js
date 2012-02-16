@@ -37,10 +37,6 @@ var RenderingQueue = (function RenderingQueueClosure() {
       if (!item.drawingRequired())
         return; // as no redraw required, no need for queueing.
 
-      if ('rendering' in item)
-        return; // is already in the queue
-
-      item.rendering = true;
       this.items.push(item);
       if (this.items.length > 1)
         return; // not first item
@@ -49,7 +45,6 @@ var RenderingQueue = (function RenderingQueueClosure() {
     },
     continueExecution: function RenderingQueueContinueExecution() {
       var item = this.items.shift();
-      delete item.rendering;
 
       if (this.items.length == 0)
         return; // queue is empty
@@ -571,6 +566,10 @@ var PDFView = {
     }
   },
 
+  pinSidebar: function pdfViewPinSidebar() {
+    document.getElementById('sidebar').classList.toggle('pinned');
+  },
+
   getVisiblePages: function pdfViewGetVisiblePages() {
     var pages = this.pages;
     var kBottomMargin = 10;
@@ -865,7 +864,10 @@ var PageView = function pageView(container, content, id, pageWidth, pageHeight,
     var self = this;
     stats.begin = Date.now();
     this.content.startRendering(ctx, function pageViewDrawCallback(error) {
-      div.removeChild(self.loadingIconDiv);
+      if (self.loadingIconDiv) {
+        div.removeChild(self.loadingIconDiv);
+        delete self.loadingIconDiv;
+      }
 
       if (error)
         PDFView.error('An error occurred while rendering the page.', error);
@@ -965,7 +967,7 @@ var ThumbnailView = function thumbnailView(container, page, id, pageRatio) {
   };
 
   this.setImage = function thumbnailViewSetImage(img) {
-    if (this.hasImage)
+    if (this.hasImage || !img)
       return;
 
     var ctx = getPageDrawContext();
@@ -1202,7 +1204,6 @@ function updateViewarea() {
 window.addEventListener('scroll', function webViewerScroll(evt) {
   updateViewarea();
 }, true);
-
 
 var thumbnailTimer;
 
