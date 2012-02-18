@@ -393,7 +393,7 @@
         // for our verification font, which we check based
         // on the list of Unicode 6.0 whitespace code points:
         var printable = function (chr) {
-          return [0x0009,0x000A,0x000B,0x000C,0x000D,0x0020,0x0085,0x00A0,
+          return [0x0000,0x0009,0x000A,0x000B,0x000C,0x000D,0x0020,0x0085,0x00A0,
                    0x1680,0x180E,0x2000,0x2001,0x2002,0x2003,0x2004,0x2005,
                    0x2006,0x2007,0x2008,0x2009,0x200A,0x2028,0x2029,0x202F,
                    0x205F,0x3000].indexOf(chr) === -1; }
@@ -606,10 +606,21 @@
     // If not, build a style element
     this.styleNode = document.createElement("style");
     this.styleNode.type = "text/css";
-    var styletext = "@font-face {\n";
+
+    var str = '';
+    var data = this.data;
+    var length = data.length;
+    for (var j = 0; j < length; j++)
+      str += String.fromCharCode(data[j]);
+
+    var url = ('url(data:' + this.format + ';base64,' +
+               window.btoa(str) + ');');
+    var styletext = "@font-face { font-family:'" + this.fontFamilty + "';src:" + url + '}';
+
+    /*var styletext = "@font-face {\n";
        styletext += "  font-family: '" + this.fontFamily + "';\n";
        styletext += "  src: url('" + this.url + "') format('" + this.format + "');\n";
-       styletext += "}";
+       styletext += "}"; */
     this.styleNode.innerHTML = styletext;
     return this.styleNode;
   }
