@@ -207,16 +207,27 @@
 
     var computedStyle = document.defaultView.getComputedStyle(target, '');
     var width = computedStyle.getPropertyValue("width").replace("px", '');
+
+    console.log('validate', width, this.fontFamily)
+
     // font has finished loading - remove the zero-width and
     // validation paragraph, but leave the actual font stylesheet (mark);
     if (width > 0) {
       document.head.removeChild(zero);
       document.body.removeChild(target);
       this.loaded = true;
+      this.drawCanvas();
       this.onload();
     }
     // font has not finished loading - wait 50ms and try again
-    else { setTimeout(function () { font.validate(target, zero, mark, font, timeout === false ? false : timeout-50); }, 50); }
+    else {
+      setTimeout(
+        function () {
+          font.validate(target, zero, mark, font, timeout === false ? false : timeout-50);
+        },
+        50
+      );
+    }
   };
 
   /**
@@ -406,7 +417,9 @@
           endChar = false;
         }
 
-        if (endChar !== false) {
+        if (endChar === false) {
+          console.log('!!! NO END_CHAR FOR', this.fontFamily, '!!!');
+        } else {
           // We now have a printable character to validate with!
           // We need to make sure to encode the correct "idDelta"
           // value for this character, because our "glyph" will
@@ -504,6 +517,7 @@
       // actually build a quick <span> to see how much
       // of that surface we don't need to look at.
       var canvas = document.createElement("canvas");
+      canvas.id = this.fontFamily;
       canvas.width = quad;
       canvas.height = quad;
       this.canvas = canvas;
@@ -521,11 +535,18 @@
       // string metrics, which is about as far from desired
       // as is possible.
       var context = canvas.getContext("2d");
-      context.font = "1em '" + this.fontFamily + "'";
-      context.fillStyle = "white";
-      context.fillRect(-1, -1, quad+2, quad+2);
-      context.fillStyle = "black";
-      context.fillText("test text", 50, quad / 2);
+
+      var local = this;
+      this.drawCanvas = function() {
+        context.font = "1em '" + local.fontFamily + "'";
+        context.fillStyle = "white";
+        context.fillRect(-1, -1, quad+2, quad+2);
+        context.fillStyle = "black";
+        context.fillText("test text", 50, quad / 2);
+      }
+
+      this.drawCanvas();
+      document.body.appendChild(canvas);
       this.context = context;
 
       // ===================================================
@@ -540,7 +561,7 @@
 
       // We need to alias "this" because the keyword "this"
       // becomes the global context after the timeout.
-      var local = this;
+
       var delayedValidate = function() { local.validate(para, zerowidth, realfont, local, timeout); };
       setTimeout(delayedValidate, 50);
     }

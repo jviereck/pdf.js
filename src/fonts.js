@@ -451,6 +451,8 @@ var FontLoader = {
     }
 
     var rules = [], names = [], objs = [];
+    var fontsToLoad = 0;
+    var fontsLoaded = 0;
 
     for (var i = 0, ii = fonts.length; i < ii; i++) {
       var font = fonts[i];
@@ -473,6 +475,8 @@ var FontLoader = {
       var str = '';
       var data = obj.data;
       if (data) {
+        fontsToLoad += 1;
+
         var length = data.length;
         for (var j = 0; j < length; j++)
           str += String.fromCharCode(data[j]);
@@ -482,18 +486,46 @@ var FontLoader = {
           rules.push(rule);
           names.push(obj.loadedName);
         }
+
+        var f = new FontJS();
+        f.onload = function () {
+          fontsLoaded++;
+          console.log('loaded font');
+
+          if (fontsLoaded === fontsToLoad) {
+            callback();
+          }
+        }
+        f.onerror = function(msg) {
+          console.error(msg);
+
+          console.log(rule);
+
+          fontsLoaded++;
+
+          if (fontsLoaded === fontsToLoad) {
+            callback();
+          }
+        }
+        f.fontFamily = obj.loadedName;
+        f.src = obj.loadedName;
       }
     }
+
+    if (fontsToLoad == 0) {
+      callback();
+    }
+    console.log('fonts to load:', fontsToLoad);
 
     this.listeningForFontLoad = false;
     if (!isWorker && rules.length) {
       FontLoader.prepareFontLoadEvent(rules, names, objs);
     }
-
-    if (!checkFontsLoaded()) {
-      document.documentElement.addEventListener(
-        'pdfjsFontLoad', checkFontsLoaded, false);
-    }
+    //
+    // if (!checkFontsLoaded()) {
+    //   document.documentElement.addEventListener(
+    //     'pdfjsFontLoad', checkFontsLoaded, false);
+    // }
 
     return objs;
   },
