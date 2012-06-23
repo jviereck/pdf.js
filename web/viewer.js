@@ -1497,6 +1497,9 @@ var TextLayerBuilder = function textLayerBuilder(textLayerDiv) {
     var renderingDone = false;
     var renderInterval = 0;
     var resumeInterval = 500; // in ms
+    
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
 
     // Render the text layer, one div at a time
     function renderTextLayer() {
@@ -1513,10 +1516,20 @@ var TextLayerBuilder = function textLayerBuilder(textLayerDiv) {
           // Adjust div width to match canvas text
           // Due to the .offsetWidth calls, this is slow
           // This needs to come after appending to the DOM
-          var textScale = textDiv.dataset.canvasWidth / textDiv.offsetWidth;
+          
+          var start = window.performance.now();
+          
+          ctx.font = textDiv.style.fontSize + ' sans-serif';
+          var width = ctx.measureText(textDiv.textContent).width;
+                    
+          var textScale2 = textDiv.dataset.canvasWidth / textDiv.offsetWidth;
+          var textScale = textDiv.dataset.canvasWidth / width;
+          
           CustomStyle.setProp('transform' , textDiv,
             'scale(' + textScale + ', 1)');
           CustomStyle.setProp('transformOrigin' , textDiv, '0% 0%');
+          
+          console.log('renderTextLayer', textScale, textScale2, window.performance.now() - start, ctx.font);
         }
       } // textLength > 0
     }
