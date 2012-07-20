@@ -10,7 +10,7 @@
 //
 // Fetch the PDF document from the URL using promices
 //
-PDFJS.getDocument('helloworld.pdf').then(function(pdf) {
+PDFJS.getDocument('helloworld.pdf').then(function callback(pdf) {
   // Using promise to fetch the page
   pdf.getPage(1).then(function(page) {
     var scale = 1.5;
@@ -33,5 +33,7 @@ PDFJS.getDocument('helloworld.pdf').then(function(pdf) {
     };
     page.render(renderContext);
   });
+}, function errback(error) {
+  alert("Something went wrong :(\n" + error);
 });
 

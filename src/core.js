@@ -52,17 +52,28 @@ function getPdf(arg, callback) {
   if ('progress' in params)
     xhr.onprogress = params.progress || undefined;
 
-  if ('error' in params)
-    xhr.onerror = params.error || undefined;
+  // Make sure to call the error callback only once. The callback might reject
+  // a promise. As promises can only get rejected once, this is a bad thing.
+  var reportedError = false;
 
-  xhr.onreadystatechange = function getPdfOnreadystatechange(e) {
+  function reportError(evt) {
+    if (!reportedError)
+      params.error(evt);
+    reportedError = true;
+  }
+
+  if ('error' in params) {
+    xhr.onerror = reportError;
+  }
+
+  xhr.onreadystatechange = function getPdfOnreadystatechange(evt) {
     if (xhr.readyState === 4) {
       if (xhr.status === xhr.expected) {
         var data = (xhr.mozResponseArrayBuffer || xhr.mozResponse ||
                     xhr.responseArrayBuffer || xhr.response);
         callback(data);
       } else if (params.error) {
-        params.error(e);
+        reportError(evt);
       }
     }
   };
