@@ -32,46 +32,46 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
   function TextLayerBuilder(options) {
     this.textLayerDiv = options.textLayerDiv;
     this.layoutDone = false;
-    this.divContentDone = false;
+    this.spanContentDone = false;
     this.pageIdx = options.pageIndex;
     this.matches = [];
     this.lastScrollSource = options.lastScrollSource || null;
     this.viewport = options.viewport;
     this.isViewerInPresentationMode = options.isViewerInPresentationMode;
-    this.textDivs = [];
+    this.textSpans = [];
     this.findController = window.PDFFindController || null;
   }
 
   TextLayerBuilder.prototype = {
     renderLayer: function TextLayerBuilder_renderLayer() {
       var textLayerFrag = document.createDocumentFragment();
-      var textDivs = this.textDivs;
-      var textDivsLength = textDivs.length;
+      var textSpans = this.textSpans;
+      var textSpansLength = textSpans.length;
       var canvas = document.createElement('canvas');
       var ctx = canvas.getContext('2d');
 
       // No point in rendering many divs as it would make the browser
       // unusable even after the divs are rendered.
-      if (textDivsLength > MAX_TEXT_DIVS_TO_RENDER) {
+      if (textSpansLength > MAX_TEXT_DIVS_TO_RENDER) {
         return;
       }
 
-      for (var i = 0; i < textDivsLength; i++) {
-        var textDiv = textDivs[i];
-        if (textDiv.dataset.isWhitespace !== undefined) {
+      for (var i = 0; i < textSpansLength; i++) {
+        var textSpan = textSpans[i];
+        if (textSpan.dataset.isWhitespace !== undefined) {
           continue;
         }
 
-        ctx.font = textDiv.style.fontSize + ' ' + textDiv.style.fontFamily;
-        var width = ctx.measureText(textDiv.textContent).width;
+        ctx.font = textSpan.style.fontSize + ' ' + textSpan.style.fontFamily;
+        var width = ctx.measureText(textSpan.textContent).width;
         if (width > 0) {
-          textLayerFrag.appendChild(textDiv);
-          var textScale = textDiv.dataset.canvasWidth / width;
-          var rotation = textDiv.dataset.angle;
+          textLayerFrag.appendChild(textSpan);
+          var textScale = textSpan.dataset.canvasWidth / width;
+          var rotation = textSpan.dataset.angle;
           var transform = 'scale(' + textScale + ', 1)';
           transform = 'rotate(' + rotation + 'deg) ' + transform;
-          CustomStyle.setProp('transform' , textDiv, transform);
-          CustomStyle.setProp('transformOrigin' , textDiv, '0% 0%');
+          CustomStyle.setProp('transform' , textSpan, transform);
+          CustomStyle.setProp('transformOrigin' , textSpan, '0% 0%');
         }
       }
 
@@ -102,10 +102,10 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
 
     appendText: function TextLayerBuilder_appendText(geom, styles) {
       var style = styles[geom.fontName];
-      var textDiv = document.createElement('div');
-      this.textDivs.push(textDiv);
+      var textSpan = document.createElement('span');
+      this.textSpans.push(textSpan);
       if (!/\S/.test(geom.str)) {
-        textDiv.dataset.isWhitespace = true;
+        textSpan.dataset.isWhitespace = true;
         return;
       }
       var tx = PDFJS.Util.transform(this.viewport.transform, geom.transform);
@@ -117,19 +117,19 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
       var fontAscent = (style.ascent ? style.ascent * fontHeight :
         (style.descent ? (1 + style.descent) * fontHeight : fontHeight));
 
-      textDiv.style.position = 'absolute';
-      textDiv.style.left = (tx[4] + (fontAscent * Math.sin(angle))) + 'px';
-      textDiv.style.top = (tx[5] - (fontAscent * Math.cos(angle))) + 'px';
-      textDiv.style.fontSize = fontHeight + 'px';
-      textDiv.style.fontFamily = style.fontFamily;
+      textSpan.style.position = 'absolute';
+      textSpan.style.left = (tx[4] + (fontAscent * Math.sin(angle))) + 'px';
+      textSpan.style.top = (tx[5] - (fontAscent * Math.cos(angle))) + 'px';
+      textSpan.style.fontSize = fontHeight + 'px';
+      textSpan.style.fontFamily = style.fontFamily;
 
-      textDiv.textContent = geom.str;
-      textDiv.dataset.fontName = geom.fontName;
-      textDiv.dataset.angle = angle * (180 / Math.PI);
+      textSpan.textContent = geom.str;
+      textSpan.dataset.fontName = geom.fontName;
+      textSpan.dataset.angle = angle * (180 / Math.PI);
       if (style.vertical) {
-        textDiv.dataset.canvasWidth = geom.height * this.viewport.scale;
+        textSpan.dataset.canvasWidth = geom.height * this.viewport.scale;
       } else {
-        textDiv.dataset.canvasWidth = geom.width * this.viewport.scale;
+        textSpan.dataset.canvasWidth = geom.width * this.viewport.scale;
       }
     },
 
@@ -140,7 +140,7 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
       for (var i = 0, len = textItems.length; i < len; i++) {
         this.appendText(textItems[i], textContent.styles);
       }
-      this.divContentDone = true;
+      this.spanContentDone = true;
       this.setupRenderLayoutTimer();
     },
 
@@ -201,7 +201,7 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
       }
 
       var bidiTexts = this.textContent.items;
-      var textDivs = this.textDivs;
+      var textSpans = this.textSpans;
       var prevEnd = null;
       var isSelectedPage = (this.findController === null ?
         false : (this.pageIdx === this.findController.selected.pageIdx));
@@ -216,12 +216,12 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
 
       function beginText(begin, className) {
         var divIdx = begin.divIdx;
-        textDivs[divIdx].textContent = '';
+        textSpans[divIdx].textContent = '';
         appendTextToDiv(divIdx, 0, begin.offset, className);
       }
 
       function appendTextToDiv(divIdx, fromOffset, toOffset, className) {
-        var div = textDivs[divIdx];
+        var div = textSpans[divIdx];
         var content = bidiTexts[divIdx].str.substring(fromOffset, toOffset);
         var node = document.createTextNode(content);
         if (className) {
@@ -249,9 +249,9 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
         var end = match.end;
         var isSelected = (isSelectedPage && i === selectedMatchIdx);
         var highlightSuffix = (isSelected ? ' selected' : '');
-         
+
         if (isSelected && !this.isViewerInPresentationMode) {
-          scrollIntoView(textDivs[begin.divIdx],
+          scrollIntoView(textSpans[begin.divIdx],
                          { top: FIND_SCROLL_OFFSET_TOP,
                            left: FIND_SCROLL_OFFSET_LEFT });
         }
@@ -275,7 +275,7 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
           appendTextToDiv(begin.divIdx, begin.offset, infinity.offset,
                           'highlight begin' + highlightSuffix);
           for (var n0 = begin.divIdx + 1, n1 = end.divIdx; n0 < n1; n0++) {
-            textDivs[n0].className = 'highlight middle' + highlightSuffix;
+            textSpans[n0].className = 'highlight middle' + highlightSuffix;
           }
           beginText(end, 'highlight end' + highlightSuffix);
         }
@@ -295,7 +295,7 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
 
       // Clear all matches.
       var matches = this.matches;
-      var textDivs = this.textDivs;
+      var textSpans = this.textSpans;
       var bidiTexts = this.textContent.items;
       var clearedUntilDivIdx = -1;
 
@@ -304,7 +304,7 @@ var TextLayerBuilder = (function TextLayerBuilderClosure() {
         var match = matches[i];
         var begin = Math.max(clearedUntilDivIdx, match.begin.divIdx);
         for (var n = begin, end = match.end.divIdx; n <= end; n++) {
-          var div = textDivs[n];
+          var div = textSpans[n];
           div.textContent = bidiTexts[n].str;
           div.className = '';
         }
